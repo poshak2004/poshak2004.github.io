@@ -1,0 +1,1302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PoshakOS · Poshak Kotresha</title>
+<meta name="description" content="Portfolio of Poshak Kotresha: builder of AI products, AI operations at FAFF, agent governance, native apps, ML/CV.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1d1530;
+    --paper: #fff8ee;
+    --chrome: #e9dfd2;
+    --chrome-hi: #fffaf2;
+    --chrome-lo: #9c8e86;
+    --chrome-dk: #3b2f45;
+    --title-a: #3b2f7a;
+    --title-b: #d1678f;
+    --title-inactive-a: #8b7f9a;
+    --title-inactive-b: #b9a7b5;
+    --accent: #2f8f83;
+    --accent-ink: #ffffff;
+    --warn: #c46a1b;
+    --ok: #2f8f5f;
+    --muted: #6d6070;
+    --select: rgba(59, 47, 122, 0.55);
+    --taskbar: rgba(32, 22, 54, 0.82);
+    --font-ui: "VT323", ui-monospace, monospace;
+    --font-pixel: "Press Start 2P", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1d1b4b; color: var(--ink); font-family: var(--font-ui); font-size: 20px; }
+  ::selection { background: var(--title-b); color: #fff; }
+  #scene { position: fixed; inset: 0; width: 100vw; height: 100vh; image-rendering: pixelated; image-rendering: crisp-edges; z-index: 0; }
+
+  /* ---------- desktop icons ---------- */
+  #desktop { position: fixed; inset: 0 0 44px 0; z-index: 1; padding: 14px; display: grid; grid-auto-flow: column; grid-template-rows: repeat(auto-fill, 96px); grid-auto-columns: 104px; gap: 4px 8px; align-content: start; user-select: none; }
+  .icon { width: 104px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 2px; border: 1px dashed transparent; cursor: default; color: #fff; text-align: center; outline: none; background: none; font: inherit; }
+  .icon img { width: 48px; height: 48px; image-rendering: pixelated; filter: drop-shadow(2px 2px 0 rgba(20, 10, 40, 0.55)); pointer-events: none; }
+  .icon span { font-size: 18px; line-height: 1.05; padding: 1px 3px; text-shadow: 2px 2px 0 #1d1530, 0 0 6px rgba(20, 10, 40, 0.6); overflow-wrap: anywhere; word-break: normal; }
+  .icon.selected span, .icon:focus-visible span { background: var(--select); text-shadow: 1px 1px 0 #1d1530; }
+  .icon.selected img, .icon:focus-visible img { filter: drop-shadow(2px 2px 0 rgba(20, 10, 40, 0.55)) brightness(0.85) sepia(0.4) hue-rotate(200deg); }
+  .icon:focus-visible { border-color: rgba(255, 255, 255, 0.8); }
+  #sticky { position: fixed; top: 16px; right: 18px; z-index: 2; width: 230px; padding: 16px 14px 12px; background: #fff3a8; color: #1d1530; transform: rotate(1.5deg); box-shadow: 4px 5px 0 rgba(20, 10, 40, 0.35); display: flex; flex-direction: column; gap: 2px; font-size: 19px; line-height: 1.05; }
+  #sticky strong { font-family: var(--font-pixel); font-weight: 400; font-size: 10px; margin-bottom: 6px; }
+  #sticky .pin { position: absolute; top: -6px; left: 50%; width: 12px; height: 12px; background: #d1678f; border: 2px solid #1d1530; }
+  #sticky .links { display: flex; gap: 6px; margin-top: 8px; }
+  #sticky button { font: inherit; font-size: 17px; padding: 1px 8px; background: #fffbe0; color: #1d1530; border: 2px solid #1d1530; cursor: pointer; }
+  #sticky button:hover, #sticky button:focus-visible { background: #3b2f7a; color: #fff; outline: none; }
+  .hint b { font-weight: 400; color: #ffd29a; }
+  .case { margin: 10px 0 4px; border: 2px solid #c9b8ea; background: #fbf7ff; }
+  .case div { display: grid; grid-template-columns: 84px 1fr; gap: 10px; padding: 6px 10px; border-top: 1px dashed #d9cfe6; line-height: 1.08; }
+  .case div:first-child { border-top: 0; }
+  .case dt { font-family: var(--font-pixel); font-size: 8px; color: var(--title-a); padding-top: 4px; }
+  .case dd { margin: 0; }
+  .hl-title { font-family: var(--font-pixel); font-size: 9px; color: var(--muted); margin: 14px 0 2px; }
+  .hint { position: fixed; right: 16px; bottom: 56px; z-index: 1; color: #fff; font-size: 18px; text-shadow: 2px 2px 0 #1d1530; opacity: 0.85; pointer-events: none; text-align: right; }
+
+  /* ---------- windows ---------- */
+  .win { position: fixed; z-index: 10; min-width: 280px; min-height: 160px; display: flex; flex-direction: column; background: var(--chrome); border: 2px solid; border-color: var(--chrome-hi) var(--chrome-dk) var(--chrome-dk) var(--chrome-hi); box-shadow: inset -2px -2px 0 var(--chrome-lo), inset 2px 2px 0 #fff, 6px 6px 0 rgba(20, 10, 40, 0.35); padding: 3px; resize: both; overflow: hidden; max-width: 100vw; max-height: calc(100vh - 44px); }
+  .win.max { left: 0 !important; top: 0 !important; width: 100vw !important; height: calc(100vh - 44px) !important; resize: none; }
+  .win.min { display: none; }
+  .win.opening { animation: pop 140ms steps(4) both; }
+  @keyframes pop { from { transform: scale(0.85); opacity: 0; } to { transform: none; opacity: 1; } }
+  .titlebar { display: flex; align-items: center; gap: 6px; padding: 3px 3px 3px 6px; background: linear-gradient(90deg, var(--title-inactive-a), var(--title-inactive-b)); color: #fff; cursor: grab; user-select: none; touch-action: none; }
+  .win.active .titlebar { background: linear-gradient(90deg, var(--title-a), var(--title-b)); }
+  .titlebar img { width: 18px; height: 18px; image-rendering: pixelated; }
+  .titlebar .t { flex: 1; font-family: var(--font-pixel); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.35); padding-top: 2px; }
+  .tbtn { width: 24px; height: 22px; display: grid; place-items: center; background: var(--chrome); color: var(--ink); border: 2px solid; border-color: var(--chrome-hi) var(--chrome-dk) var(--chrome-dk) var(--chrome-hi); font-family: var(--font-pixel); font-size: 9px; padding: 0; cursor: pointer; }
+  .tbtn:active, .btn:active { border-color: var(--chrome-dk) var(--chrome-hi) var(--chrome-hi) var(--chrome-dk); }
+  .menubar { display: flex; gap: 2px; padding: 2px 2px 3px; font-size: 19px; flex-wrap: wrap; }
+  .menubar button { background: none; border: 0; font: inherit; color: var(--ink); padding: 0 8px; cursor: pointer; }
+  .menubar button:hover, .menubar button:focus-visible { background: var(--title-a); color: #fff; outline: none; }
+  .body { flex: 1; min-height: 0; overflow: auto; background: var(--paper); border: 2px solid; border-color: var(--chrome-dk) var(--chrome-hi) var(--chrome-hi) var(--chrome-dk); }
+  .statusbar { display: flex; gap: 4px; padding-top: 3px; font-size: 17px; color: var(--muted); }
+  .statusbar > div { flex: 1; padding: 0 6px; border: 2px solid; border-color: var(--chrome-lo) var(--chrome-hi) var(--chrome-hi) var(--chrome-lo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* ---------- window contents ---------- */
+  .pad { padding: 14px 16px 18px; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px; background: var(--chrome); color: var(--ink); border: 2px solid; border-color: var(--chrome-hi) var(--chrome-dk) var(--chrome-dk) var(--chrome-hi); font: inherit; font-size: 19px; text-decoration: none; cursor: pointer; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); }
+  .btn[aria-disabled="true"] { color: var(--chrome-lo); pointer-events: none; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  h1, h2 { font-family: var(--font-pixel); font-weight: 400; line-height: 1.5; margin: 0 0 8px; }
+  h1 { font-size: 15px; }
+  h2 { font-size: 11px; margin-top: 18px; color: var(--title-a); }
+  p { margin: 6px 0; line-height: 1.15; }
+  ul.hl { margin: 6px 0; padding-left: 20px; }
+  ul.hl li { margin: 3px 0; line-height: 1.1; }
+  ul.hl li::marker { content: "▸ "; color: var(--title-b); }
+  .chips { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+  .chip { font-size: 17px; padding: 0 7px; background: #efe5ff; border: 1px solid #c9b8ea; color: #3b2f7a; }
+  .badge { display: inline-block; font-family: var(--font-pixel); font-size: 8px; padding: 4px 6px 3px; color: #fff; vertical-align: middle; }
+  .badge.live { background: var(--ok); } .badge.local { background: var(--muted); } .badge.wip { background: var(--warn); } .badge.plan { background: #8b7f9a; } .badge.dl { background: var(--accent); }
+  .note { margin-top: 12px; padding: 8px 10px; background: #fff1d6; border: 1px dashed #d9a75b; font-size: 18px; line-height: 1.1; }
+  .tabs { display: flex; gap: 2px; padding: 0 4px; margin-top: 2px; }
+  .tab { font: inherit; font-size: 19px; padding: 2px 12px; background: var(--chrome); border: 2px solid; border-bottom: 0; border-color: var(--chrome-hi) var(--chrome-dk) transparent var(--chrome-hi); cursor: pointer; position: relative; top: 2px; color: var(--ink); }
+  .tab[aria-selected="true"] { background: var(--paper); z-index: 1; padding-top: 4px; top: 2px; }
+  .panel[hidden] { display: none; }
+  iframe.live { width: 100%; height: 100%; min-height: 420px; border: 0; display: block; background: #fff; }
+  .md { font-family: system-ui, -apple-system, Segoe UI, sans-serif; font-size: 14px; line-height: 1.55; color: #241b2f; }
+  .md img { max-width: 100%; }
+  .md pre { background: #241b2f; color: #f3e9ff; padding: 10px; overflow: auto; font-size: 12px; }
+  .md code { font-size: 12px; background: #efe5ff; padding: 1px 4px; }
+  .md pre code { background: none; padding: 0; }
+  .md table { border-collapse: collapse; display: block; overflow-x: auto; }
+  .md td, .md th { border: 1px solid #d9cfe6; padding: 4px 8px; }
+  .md h1, .md h2, .md h3 { font-family: system-ui, sans-serif; font-weight: 700; color: #241b2f; }
+  .md h1 { font-size: 22px; } .md h2 { font-size: 18px; margin-top: 20px; } .md h3 { font-size: 15px; }
+  .explorer { display: grid; grid-template-columns: repeat(auto-fill, 104px); gap: 8px; padding: 12px; }
+  .explorer .icon { color: var(--ink); width: 104px; }
+  .explorer .icon span { text-shadow: none; }
+  .explorer .icon img { filter: none; }
+  .explorer .icon .sub { font-size: 15px; color: var(--muted); background: none; }
+  .notepad { font-family: var(--font-ui); font-size: 20px; line-height: 1.1; white-space: pre-wrap; padding: 10px 14px; margin: 0; color: #1d1530; }
+  .notepad a { color: #3b2f7a; }
+
+  /* ---------- taskbar / start ---------- */
+  #taskbar { position: fixed; left: 0; right: 0; bottom: 0; height: 44px; z-index: 1000; display: flex; align-items: center; gap: 6px; padding: 4px 6px; background: var(--taskbar); border-top: 2px solid rgba(255, 255, 255, 0.35); backdrop-filter: blur(3px); }
+  #start { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px 0 6px; font-family: var(--font-pixel); font-size: 11px; color: var(--ink); background: var(--chrome); border: 2px solid; border-color: var(--chrome-hi) var(--chrome-dk) var(--chrome-dk) var(--chrome-hi); cursor: pointer; }
+  #start[aria-expanded="true"] { border-color: var(--chrome-dk) var(--chrome-hi) var(--chrome-hi) var(--chrome-dk); }
+  #start img { width: 22px; height: 22px; image-rendering: pixelated; }
+  #tasks { flex: 1; display: flex; gap: 4px; overflow-x: auto; min-width: 0; }
+  .task { display: flex; align-items: center; gap: 6px; height: 34px; max-width: 190px; min-width: 44px; padding: 0 8px; font: inherit; font-size: 18px; color: var(--ink); background: var(--chrome); border: 2px solid; border-color: var(--chrome-hi) var(--chrome-dk) var(--chrome-dk) var(--chrome-hi); cursor: pointer; white-space: nowrap; overflow: hidden; }
+  .task.active { background: #fffaf2; border-color: var(--chrome-dk) var(--chrome-hi) var(--chrome-hi) var(--chrome-dk); }
+  .task img { width: 18px; height: 18px; image-rendering: pixelated; flex: none; }
+  .task span { overflow: hidden; text-overflow: ellipsis; }
+  #tray { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px; color: #fff; font-size: 20px; border: 2px solid; border-color: rgba(0, 0, 0, 0.35) rgba(255, 255, 255, 0.35) rgba(255, 255, 255, 0.35) rgba(0, 0, 0, 0.35); }
+  #tray button { background: none; border: 0; padding: 0; cursor: pointer; line-height: 0; }
+  #tray img { width: 20px; height: 20px; image-rendering: pixelated; }
+  #startmenu { position: fixed; left: 6px; bottom: 46px; z-index: 1001; width: 290px; display: flex; background: var(--chrome); border: 2px solid; border-color: var(--chrome-hi) var(--chrome-dk) var(--chrome-dk) var(--chrome-hi); box-shadow: 6px 6px 0 rgba(20, 10, 40, 0.35); }
+  #startmenu[hidden] { display: none; }
+  #startmenu .side { width: 34px; background: linear-gradient(0deg, var(--title-a), var(--title-b)); color: #fff; writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--font-pixel); font-size: 11px; padding: 10px 8px; letter-spacing: 1px; }
+  #startmenu ul { list-style: none; margin: 0; padding: 4px; flex: 1; }
+  #startmenu li button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 5px 8px; background: none; border: 0; font: inherit; font-size: 20px; color: var(--ink); text-align: left; cursor: pointer; }
+  #startmenu li button:hover, #startmenu li button:focus-visible { background: var(--title-a); color: #fff; outline: none; }
+  #startmenu li img { width: 24px; height: 24px; image-rendering: pixelated; }
+  #startmenu hr { border: 0; border-top: 2px groove var(--chrome-hi); margin: 4px 2px; }
+
+  /* ---------- pet ---------- */
+  #pet { position: fixed; left: 0; top: 0; z-index: 900; width: 66px; height: 54px; image-rendering: pixelated; cursor: pointer; touch-action: none; }
+  .bubble { position: fixed; z-index: 901; pointer-events: none; font-family: var(--font-pixel); font-size: 10px; color: #fff; text-shadow: 2px 2px 0 #1d1530; animation: floatup 1.4s steps(10) forwards; }
+  .bubble.heart { color: #ff6b8b; font-size: 14px; }
+  @keyframes floatup { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-46px); opacity: 0; } }
+  #yarn { position: fixed; z-index: 899; width: 24px; height: 24px; image-rendering: pixelated; cursor: grab; touch-action: none; }
+  #yarn[hidden] { display: none; }
+
+  /* ---------- boot / shutdown ---------- */
+  #boot, #off { position: fixed; inset: 0; z-index: 5000; display: grid; place-items: center; text-align: center; background: #120c22; color: #ffd29a; font-family: var(--font-pixel); font-size: 12px; line-height: 2; }
+  #boot[hidden], #off[hidden] { display: none; }
+  #boot .bar { width: 220px; height: 14px; margin: 18px auto 0; border: 2px solid #ffd29a; padding: 2px; }
+  #boot .bar i { display: block; height: 100%; width: 0; background: repeating-linear-gradient(90deg, #f28482 0 10px, transparent 10px 14px); animation: load 1.1s steps(14) forwards; }
+  @keyframes load { to { width: 100%; } }
+  #off { background: #000; color: #ffb35c; cursor: pointer; }
+
+  /* ---------- toasts ---------- */
+  #toasts { position: fixed; right: 10px; bottom: 54px; z-index: 1002; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; pointer-events: none; }
+  .toast { pointer-events: auto; max-width: 330px; display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; background: #fffbe8; border: 2px solid; border-color: var(--chrome-hi) var(--chrome-dk) var(--chrome-dk) var(--chrome-hi); box-shadow: 4px 4px 0 rgba(20, 10, 40, 0.35); font-size: 18px; line-height: 1.05; animation: toastIn 220ms steps(5) both; }
+  .toast img { width: 22px; height: 22px; image-rendering: pixelated; flex: none; }
+  .toast b { font-family: var(--font-pixel); font-size: 8px; display: block; margin-bottom: 4px; color: var(--title-a); }
+  .toast.out { animation: toastOut 200ms steps(4) forwards; }
+  @keyframes toastIn { from { transform: translateX(120%); } to { transform: none; } }
+  @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
+
+  /* ---------- impact counters ---------- */
+  .stat-row { display: grid; grid-template-columns: 170px 1fr 70px; gap: 10px; align-items: center; margin: 8px 0; }
+  .stat-row .lbl { font-size: 19px; }
+  .stat-row .num { text-align: right; font-family: var(--font-pixel); font-size: 11px; }
+  .pbar { height: 18px; border: 2px solid; border-color: var(--chrome-dk) var(--chrome-hi) var(--chrome-hi) var(--chrome-dk); background: #f1e8dc; padding: 2px; }
+  .pbar i { display: block; height: 100%; width: 0; transition: width 1.4s steps(28); background: repeating-linear-gradient(90deg, var(--c, var(--accent)) 0 10px, transparent 10px 12px); }
+  .bignum { font-family: var(--font-pixel); font-size: 26px; color: var(--title-a); letter-spacing: 1px; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+  .kpi { background: #efe5ff; border: 1px solid #c9b8ea; padding: 8px; text-align: center; }
+  .kpi .bignum { font-size: 16px; display: block; margin-bottom: 4px; }
+
+  /* ---------- mandate demo (plain-language) ---------- */
+  .rules { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; padding: 10px 12px; background: #fff3a8; border: 2px solid #1d1530; margin-bottom: 12px; }
+  .rules .who { font-family: var(--font-pixel); font-size: 9px; line-height: 1.6; }
+  .rules ul { margin: 0; padding-left: 18px; } .rules li { margin: 1px 0; }
+  .vs-head, .vs-row { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 8px; }
+  .vs-head { font-family: var(--font-pixel); font-size: 8px; color: var(--muted); padding: 0 4px 6px; }
+  .vs-head .bad { color: #c0392b; } .vs-head .good { color: var(--ok); }
+  .vs-row { margin-bottom: 8px; animation: pop 160ms steps(4) both; }
+  .vs-row > div { padding: 8px 10px; line-height: 1.08; border: 2px solid; }
+  .vs-ask { background: #fff; border-color: #d9cfe6 !important; }
+  .vs-ask small { display: block; color: var(--muted); font-size: 17px; margin-bottom: 3px; }
+  .vs-bad { background: #fdecea; border-color: #f0b8b0 !important; color: #8a1c1c; }
+  .vs-bad.ok { background: #f1ece6; border-color: #d9cfc4 !important; color: var(--ink); }
+  .vs-good { border-color: transparent !important; }
+  .vs-good.block { background: #fdecea; } .vs-good.allow { background: #e8f6ee; } .vs-good.ask { background: #fff1d6; }
+  .verdict { display: inline-block; font-family: var(--font-pixel); font-size: 9px; padding: 5px 6px 4px; color: #fff; margin-bottom: 5px; animation: stamp 260ms steps(4) both; }
+  .verdict.block { background: #c0392b; } .verdict.allow { background: var(--ok); } .verdict.ask { background: var(--warn); } .verdict.oops { background: #8a1c1c; } .verdict.fine { background: #6d6070; }
+  @keyframes stamp { from { transform: scale(2.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .vs-hidden { visibility: hidden; }
+  .score { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .score > div { padding: 10px; text-align: center; border: 2px solid #1d1530; animation: pop 160ms steps(4) both; }
+  .score .bignum { font-size: 20px; display: block; margin-bottom: 4px; }
+  .score .bad { background: #fdecea; } .score .bad .bignum { color: #c0392b; } .score .good { background: #e8f6ee; } .score .good .bignum { color: var(--ok); }
+  details.tech { margin-top: 12px; font-size: 18px; } details.tech summary { cursor: pointer; color: var(--title-a); }
+  @media (max-width: 700px) { .vs-head { display: none; } .vs-row { grid-template-columns: 1fr; gap: 3px; } .vs-bad::before { content: "Without Mandate: "; font-weight: 700; } .vs-good::before { content: "With Mandate: "; font-weight: 700; } .rules { grid-template-columns: 1fr; } }
+  .icon.new::after { content: "NEW"; position: absolute; margin: -6px 0 0 34px; font-family: var(--font-pixel); font-size: 7px; background: var(--title-b); color: #fff; padding: 3px 4px 2px; animation: blink 1.2s steps(1) infinite; }
+  .icon { position: relative; }
+  .icon:hover img { transform: translateY(-3px); }
+
+  @media (max-width: 700px) {
+    .stat-row { grid-template-columns: 110px 1fr 56px; }
+    #desktop { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, 86px); grid-template-rows: none; grid-auto-columns: auto; justify-content: center; }
+    .icon { width: 86px; }
+    .win { left: 0 !important; top: 0 !important; width: 100vw !important; height: calc(100vh - 44px) !important; resize: none; }
+    .hint { display: none; }
+    #sticky { top: 410px; right: 12px; width: 210px; font-size: 17px; }
+    .case div { grid-template-columns: 1fr; gap: 2px; }
+    .task { max-width: 120px; }
+    #pet { width: 54px; height: 44px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .win.opening, .bubble, .toast, .stamp, .prop, .chain .blk, .icon.new::after { animation: none; }
+    .pbar i { transition: none; }
+  }
+  @media print {
+    body * { visibility: hidden !important; }
+    #print-resume, #print-resume * { visibility: visible !important; }
+    #print-resume { position: absolute; inset: 0; display: block !important; background: #fff; color: #000; font-family: Georgia, serif; font-size: 12pt; white-space: pre-wrap; padding: 0; }
+    html, body { overflow: visible; height: auto; }
+  }
+</style>
+</head>
+<body>
+<canvas id="scene" aria-hidden="true"></canvas>
+
+<main id="desktop" aria-label="Desktop"></main>
+<div class="hint"><b>Start here → Mandate_Demo.exe</b><br>double-click an icon to open · click the pet</div>
+<aside id="sticky" aria-label="About this site">
+  <div class="pin" aria-hidden="true"></div>
+  <strong>Poshak Kotresha</strong>
+  <span>APM candidate · builds AI products</span>
+  <span>Ops at FAFF · 1,505 AI failures reviewed</span>
+  <div class="links"><button type="button" data-open="demo">▶ Mandate demo</button><button type="button" data-open="resume">Resume</button></div>
+</aside>
+
+<canvas id="pet" width="22" height="18" aria-label="Pixel pet. Click to pet it." role="img"></canvas>
+<canvas id="yarn" width="8" height="8" hidden aria-hidden="true"></canvas>
+
+<nav id="taskbar" aria-label="Taskbar">
+  <button id="start" aria-haspopup="menu" aria-expanded="false" aria-controls="startmenu"><img alt="" id="start-logo">Start</button>
+  <div id="tasks" role="toolbar" aria-label="Open windows"></div>
+  <div id="tray">
+    <button id="tray-pet" title="Show/hide pet" aria-label="Toggle pet"><img alt="" id="tray-pet-img"></button>
+    <span id="clock" aria-live="off"></span>
+  </div>
+</nav>
+
+<div id="startmenu" role="menu" hidden>
+  <div class="side">PoshakOS</div>
+  <ul id="startlist"></ul>
+</div>
+
+<div id="boot" aria-live="polite">
+  <div>
+    <div>PoshakOS</div>
+    <div style="font-size:9px;opacity:.75">loading agents, memories &amp; one cat…</div>
+    <div class="bar"><i></i></div>
+  </div>
+</div>
+<div id="toasts" aria-live="polite"></div>
+
+<div id="off" hidden role="button" tabindex="0">It's now safe to turn off<br>your computer.<br><br><span style="font-size:9px">(click to boot again)</span></div>
+<pre id="print-resume" hidden></pre>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script>
+"use strict";
+/* ======================================================================
+   CONTENT: every fact below comes from Poshak's GitHub repositories,
+   READMEs and resume. Nothing is invented; unknowns are left out.
+   ====================================================================== */
+const GH = "https://github.com/poshak2004";
+const LINKEDIN = "https://linkedin.com/in/poshak-k";
+
+const PROJECTS = {
+  mandate: {
+    title: "Mandate", repo: "mandate", icon: "shield", status: ["live", "Founder · open source"],
+    tagline: "A deterministic authorization layer for AI agents that act for people: agents propose, a rule engine decides, every decision leaves a signed receipt.",
+    highlights: [
+      "Born at FAFF: AI agents booking, paying and messaging for customers could approve their own risky actions",
+      "ALLOW / BLOCK / ESCALATE from a pure engine: no LLM in the decision, fail-closed on missing information",
+      "Ed25519-signed, hash-chained receipts you can verify offline; policies in YAML with versioned changes",
+      "Grew from the Governor demo (21-node workflow canvas, audit trail, human-validated learning loop) into a developer product",
+      "Fastify API, Next.js console, TypeScript and Python SDKs, 170+ tests, CI on Node 20 and 22",
+    ],
+    stack: ["TypeScript", "Fastify", "Next.js", "PostgreSQL", "Python SDK", "Ed25519"],
+    case: {
+      Problem: "At FAFF, AI agents act for real customers: booking, paying, messaging. When the agent alone decides an action is fine, its mistakes land on people: wrong refunds, prices outside what was approved, details shared without asking.",
+      Insight: "A pattern across the 1,505 flags I reviewed: agents committing first and checking the customer's limits later. The fix isn't a smarter model; it's a checkpoint before the commitment.",
+      Decision: "Separate proposing from deciding. Agents propose; a deterministic rule engine, not an LLM, decides. Trade-off: less flexible than model judgment, but every decision is predictable, explainable and fails closed when information is missing.",
+      Result: "A working product: policy engine, signed hash-chained receipts, API, console, TypeScript and Python SDKs, 170+ tests. In the marketplace replay, 3 bad commitments become 2 blocks and 1 human approval.",
+      Next: "Run it in shadow mode on real agent traffic and measure two things: bad commitments it would have caught, and good actions it would have wrongly slowed down.",
+    },
+    note: "Demo: the marketplace replay re-runs a 2026 incident. With Mandate, the Rs 1,200 lowball is BLOCKED, the home-address request is BLOCKED, the Rs 1,600 offer is ALLOWED and the meetup ESCALATES to the seller.",
+  },
+  careeros: {
+    title: "Career OS", icon: "chart", status: ["wip", "In development"],
+    tagline: "Resume → matched job → one-click application kit → tracker, for fresh graduates.",
+    highlights: [
+      "Web app for freshers and a /v1 API for partners, with an optional MCP adapter",
+      "Claude-powered resume parsing and job matching",
+      "Zero-setup local run; tests never touch the network",
+    ],
+    stack: ["Python", "FastAPI", "SQLAlchemy", "Claude API", "Jinja2", "pytest"],
+    note: "Still in development; repository not public yet.",
+  },
+  fit24: {
+    title: "Fit 24 Gym Website", icon: "globe", status: ["live", "Live · freelance"],
+    tagline: "Marketing site for Fit 24 Premium Fitness Club, Rajajinagar, Bengaluru.",
+    highlights: [
+      "Researched and verified the business's facts before writing a word",
+      "Agreed a launch checklist with the owner",
+      "Prerendered to static HTML with JSON-LD, sitemap and font preloads",
+    ],
+    stack: ["React", "TypeScript", "Vite", "Tailwind CSS", "Vercel"],
+    case: {
+      Problem: "A neighbourhood gym needed a site that answers what new members ask before visiting: where it is, when it's open, what it offers, and whether it's legit.",
+      Insight: "For a local business, trust comes from facts that are right. So every claim was verified against sources before it went on the page, and unknowns were left for the owner to confirm.",
+      Decision: "A static, prerendered single page: fast on mobile data and search-ready with structured data, instead of a heavier CMS. Trade-off: the owner needs a developer to change content.",
+      Result: "Live at fit24-rajajinagar.vercel.app, with a launch checklist agreed with the owner.",
+      Next: "Measure enquiries the site creates (call and WhatsApp taps) and give the owner an editable schedule.",
+    },
+    live: { label: "Open live site", url: "https://fit24-rajajinagar.vercel.app", embed: true },
+  },
+  errand: {
+    title: "WhatsApp Errand Agent", icon: "agent", status: ["wip", "In progress"],
+    tagline: "Founding-engineer portfolio #1 — an AI errand assistant on WhatsApp with long-term memory.",
+    highlights: [
+      "Claude tool-calling loop with a step cap, a tool-failure budget, and honest human handoff",
+      "Semantic memory on Postgres + pgvector; thresholds calibrated against the real embedding model",
+      "Idempotent signed WhatsApp webhook, per-user advisory locks, reminder scheduler",
+      "Operator handoff API and product metrics computed from database rows",
+    ],
+    stack: ["Python", "FastAPI", "Claude API", "PostgreSQL", "pgvector", "pytest"],
+    note: "Core system built and tested with a scripted model. Live-model testing and real-user testing not completed yet; repository not published yet.",
+  },
+  voice: { title: "Voice Booking Agent", icon: "phone", status: ["plan", "Planned"], tagline: "Founding-engineer portfolio #2 — calls a business, handles a real conversation, returns a structured call record.", highlights: ["Telephony provider abstraction", "Confidence threshold → safe human fallback"], stack: ["Python", "FastAPI", "STT / TTS", "Claude"], note: "Not started yet." },
+  browser: { title: "Browser Agent", icon: "globe", status: ["plan", "Planned"], tagline: "Founding-engineer portfolio #3 — operates websites with Playwright and stops for human approval before anything irreversible.", highlights: ["Replayable execution trace with screenshots", "Approval gate before submit / pay / send"], stack: ["Python", "Playwright", "Claude"], note: "Not started yet." },
+  evals: { title: "Agent QA Scoring", icon: "chart", status: ["plan", "Planned"], tagline: "Founding-engineer portfolio #4 — Claude-as-judge vs human labels on synthetic agent conversations.", highlights: ["Rubric: completion, accuracy, tools, safety, handoff, efficiency", "Agreement, precision/recall, confusion matrix"], stack: ["Python", "Claude", "Dashboard"], note: "Not started yet." },
+  governor: { title: "Agent Approval Layer", icon: "shield", status: ["plan", "Planned"], tagline: "Founding-engineer portfolio #5 — open-source deterministic ALLOW / BLOCK / ESCALATE policy layer for agent tool calls.", highlights: ["Policy engine + approvals + audit log", "Python package with FastAPI demo"], stack: ["Python", "FastAPI", "pytest"], note: "Not started yet." },
+
+  pixel: {
+    title: "PIXEL Workbench", repo: "pixel-ai-workbench", icon: "pixel", status: ["local", "Desktop app"],
+    tagline: "A local-first AI engineering and agent execution environment for macOS.",
+    highlights: [
+      "Table of Agents: independent proposals → blind cross-review → rebuttal → adjudication → governance",
+      "Layered deterministic governance engine with approvals",
+      "DAG workflows: parallel branches, retries, timeouts, cancellation",
+      "Multi-provider (Anthropic, OpenAI-compatible, Gemini, offline demo), MCP client, sandboxed FS, git worktrees",
+      "Keys in macOS Keychain, redacted event journal, cost accounting; Vitest + Playwright E2E",
+    ],
+    stack: ["TypeScript", "Electron", "Drizzle", "Vitest", "Playwright", "MCP"],
+    note: "Electron desktop app — runs locally on macOS (npm run dev), so there is no web deployment.",
+  },
+  island: {
+    title: "Island", repo: "island", icon: "island", status: ["dl", "Download"],
+    tagline: "The iPhone Dynamic Island, recreated natively for the MacBook notch.",
+    highlights: [
+      "Native Swift, SwiftUI and AppKit — no Electron, about 0.1% CPU when idle",
+      "Live activities: music, timers, downloads, mic/camera use; hover to expand",
+      "Search (⌥Space): apps, files, actions, web results, optional AI answers with citations",
+      "Accessibility: Reduce Motion, Reduce Transparency, Increase Contrast; public Apple APIs only",
+      "One island, not a dashboard of widgets: a deterministic priority engine decides what shows",
+    ],
+    stack: ["Swift", "SwiftUI", "AppKit"],
+    case: {
+      Problem: "The MacBook notch is dead screen space, and the apps that make it useful are paid. I didn't want to pay for something I could build.",
+      Insight: "People want one glanceable thing at a time, not another dashboard. And anything that's always on must cost almost nothing in battery.",
+      Decision: "One island with a deterministic priority order instead of many widgets; native Swift instead of Electron; public Apple APIs only, with private data opt-in. Trade-off: some features can't exist, because macOS has no public API for things like system-wide Now Playing or calls.",
+      Result: "v0.2.0 shipped as a free download, about 0.1% CPU when idle, with Reduce Motion, Reduce Transparency and Increase Contrast supported.",
+      Next: "Notarize it for one-click install, add privacy-friendly download analytics, and ship the automation rule editor (the engine already exists).",
+    },
+    live: { label: "Download v0.2.0 (.dmg)", url: GH + "/island/releases" },
+    note: "Not notarized (no paid Apple Developer account): first launch needs System Settings → Privacy & Security → Open Anyway.",
+  },
+  study: {
+    title: "Study Buddy AI", repo: "study-buddy-ai", icon: "book", status: ["live", "Live"],
+    tagline: "Study tracker that flags drop-off risk with a deterministic rule and gets one LLM coaching tip from aggregate stats.",
+    highlights: ["Deterministic risk rule first, LLM only for one coaching tip", "React + Supabase", "Playwright tests"],
+    stack: ["TypeScript", "React", "Supabase", "Playwright"],
+    live: { label: "Open live app", url: "https://focuspulse-ai.vercel.app/", embed: true },
+  },
+  luna: {
+    title: "Luna Soul Guide", repo: "luna-soul-guide", icon: "moon", status: ["local", "Runs locally"],
+    tagline: "AI mental-wellness companion: streaming chat, PHQ-9 / GAD-7 / DASS-21, tool-calling mood analysis, journaling.",
+    highlights: ["Streaming chat companion", "Standard screening questionnaires (PHQ-9, GAD-7, DASS-21)", "Mood analysis via tool calling; weekly summaries via Supabase edge functions"],
+    stack: ["TypeScript", "React", "Supabase Edge Functions", "LLM"],
+    note: "Not deployed yet.",
+  },
+  pipeline: {
+    title: "End-to-end ML Pipeline", repo: "end-to-end-ml-pipeline", icon: "pipe", status: ["local", "Runs locally"],
+    tagline: "Raw CSV → scikit-learn pipeline → model selection → Streamlit app with batch CSV predictions.",
+    highlights: ["Student exam-score regression", "Ridge (R² 0.77) beat Random Forest in model selection", "Streamlit app with batch predictions"],
+    stack: ["Python", "scikit-learn", "Streamlit", "pandas"],
+    note: "Not deployed yet.",
+  },
+  fraud: {
+    title: "Fraud Detection", repo: "fraud_detection", icon: "shield", status: ["local", "Notebook / script"],
+    tagline: "Credit-card fraud detection at 0.17% prevalence.",
+    highlights: ["Leakage-safe scaling, SMOTE, balanced Random Forest", "Recall 0.83 · precision 0.87 · ROC-AUC 0.975"],
+    stack: ["Python", "scikit-learn", "imbalanced-learn"],
+  },
+  yolo: {
+    title: "Industrial YOLO OCR", repo: "industrial-yolo-ocr", icon: "doc", status: ["local", "Pipeline"],
+    tagline: "YOLOv8 document-layout detection on 2,676 real industrial invoice PDFs, feeding OCR → structured extraction.",
+    highlights: ["Detects title / table / text regions", "mAP@50 0.69"],
+    stack: ["Python", "YOLOv8", "OCR"],
+  },
+  face: {
+    title: "Face AI Foundations", repo: "face-ai-foundations", icon: "face", status: ["local", "Runs locally"],
+    tagline: "Face detection (Haar, MediaPipe), CNN emotion recognition on FER-2013, MobileNet gender classification.",
+    highlights: ["Custom CNN for emotion recognition (FER-2013)", "MobileNet transfer learning", "Real-time webcam inference"],
+    stack: ["Python", "TensorFlow / Keras", "OpenCV", "MediaPipe"],
+  },
+  tumor: {
+    title: "Brain Tumor Detection", repo: "Brain-Tumor-Detection", icon: "brain", status: ["local", "Runs locally"],
+    tagline: "MRI brain-tumor classifier (TensorFlow CNN) served through a Flask web app.",
+    highlights: ["TensorFlow CNN classifier", "Flask web app for uploads and predictions"],
+    stack: ["Python", "TensorFlow", "Flask"],
+  },
+  imgcls: {
+    title: "Image Classifier", repo: "image-classification-ml", icon: "image", status: ["local", "Notebook"],
+    tagline: "Building an image classifier with Python and TensorFlow.",
+    highlights: ["Jupyter notebook walkthrough"],
+    stack: ["Python", "TensorFlow", "Jupyter"],
+  },
+};
+
+const FOLDERS = {
+  founding: { title: "Founding Engineer", items: ["errand", "voice", "browser", "evals", "governor"], intro: "Five connected projects: memory + voice + browser + evaluation + governance. Built one at a time; statuses are real." },
+  more: { title: "More Projects", items: ["careeros", "pixel", "study", "luna", "errand", "yolo", "fraud", "face", "pipeline", "tumor", "imgcls"], intro: "Work in progress and earlier builds: agents, ML and computer vision." },
+  mlcv: { title: "ML & Computer Vision", items: ["yolo", "fraud", "face", "pipeline", "tumor", "imgcls"], intro: "Where it started: ML and CV projects." },
+};
+
+const RESUME = `POSHAK KOTRESHA
+Builder of AI products · AI operations · agent governance
+Bengaluru, India · open to Product (APM) and AI product roles
+
+Email     poshakkotresha@gmail.com
+GitHub    github.com/poshak2004
+LinkedIn  linkedin.com/in/poshak-k
+
+------------------------------------------------------------
+ABOUT
+------------------------------------------------------------
+I work where AI agents meet real customers: I review what
+goes wrong, and I ship the tools that stop it.
+
+Days: the operations side of a live AI-assistant product.
+Evenings: the engineering side. Seeing both is why my work is
+about control, reliability and humans-in-the-loop, not just
+model calls.
+
+------------------------------------------------------------
+EXPERIENCE
+------------------------------------------------------------
+FAFF (AI personal-assistant startup), Bengaluru
+AI Operations Analyst, CX · May 2026 - present
+  Joined as Operations Executive; promoted to CX / AI ops.
+  - Reviewed 1,505 AI-raised quality flags across 28 review
+    days on Drona, FAFF's failure-detection system:
+    confirmed 778, corrected severity on 459, rejected 268
+    false positives, sharpening the escalation rubric.
+  - Wrote root-cause analyses on failed assistant tasks,
+    separating agent, ops and vendor faults.
+  - Stress-tested the assistant end to end as a customer.
+  - Trained incoming interns on operations; built an
+    Operator Capability Assessment (7 dimensions, admin
+    leaderboard) used to evaluate 6+ interns.
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+Dr. Ambedkar Institute of Technology, Bengaluru
+B.E., Information Science & Engineering · 2022 - 2026
+
+------------------------------------------------------------
+PRODUCTS BUILT
+------------------------------------------------------------
+Mandate (founder · TypeScript, Python)
+  Deterministic authorization layer for AI agents: agents
+  propose, a rule engine decides, no LLM in the decision.
+  Grew from the Governor demo into a product: policy
+  engine, signed hash-chained receipts, API, console,
+  TypeScript + Python SDKs, 170+ tests.
+
+Island (solo · Swift, SwiftUI, AppKit)
+  Native Dynamic Island for the MacBook notch: media,
+  timers, downloads, mic/camera, search with cited AI
+  answers, ~0.1% idle CPU. Free download, v0.2.0.
+
+Career OS (founder · in development)
+  Resume -> matched job -> one-click application kit ->
+  tracker, for fresh graduates. Claude-powered matching.
+
+------------------------------------------------------------
+OTHER PROJECTS
+------------------------------------------------------------
+Fit 24 gym website (freelance, live)
+  fit24-rajajinagar.vercel.app · React, prerendered.
+PIXEL Workbench (TypeScript, Electron)
+  Local-first AI agent environment: multi-agent review,
+  deterministic governance with approvals, MCP, E2E tests.
+Study Buddy AI (React, Supabase) · live
+Industrial YOLO OCR: YOLOv8 layout detection on 2,676
+  invoice PDFs, mAP@50 0.69.
+Fraud Detection: recall 0.83 / precision 0.87,
+  ROC-AUC 0.975 at 0.17% prevalence.
+Brain Tumor Detection: CNN on MRI scans, Flask app.
+
+------------------------------------------------------------
+LEADERSHIP
+------------------------------------------------------------
+Google Developer Groups: team projects and hackathons
+National Cadet Corps: cadet
+
+------------------------------------------------------------
+SKILLS
+------------------------------------------------------------
+Product     user research · root-cause analysis · quality
+            rubrics · PRDs · metrics · prioritization
+AI/agents   Claude / Anthropic SDK · OpenAI-compatible ·
+            Gemini · MCP · RAG · agent orchestration · evals
+Languages   Python · TypeScript · Swift · Rust · SQL
+Backend     FastAPI · Fastify · Node.js · Flask · PostgreSQL ·
+            Supabase · REST
+Frontend    React · Next.js · Tailwind · Electron
+ML / CV     TensorFlow/Keras · PyTorch · scikit-learn ·
+            YOLOv8 · OpenCV · MediaPipe
+Shipping    Git · Docker · pytest · Vitest · Playwright
+`;
+
+/* ======================================================================
+   PIXEL SPRITES — drawn from character maps; outlines added automatically
+   ====================================================================== */
+function sprite(rows, pal, { outline = "#1d1530", scale = 1 } = {}) {
+  const h = rows.length, w = rows[0].length;
+  const c = document.createElement("canvas");
+  c.width = (w + 2) * scale; c.height = (h + 2) * scale;
+  const g = c.getContext("2d");
+  const filled = (x, y) => y >= 0 && y < h && x >= 0 && x < w && rows[y][x] !== ".";
+  for (let y = -1; y <= h; y++) for (let x = -1; x <= w; x++) {
+    let col = null;
+    if (filled(x, y)) col = pal[rows[y][x]];
+    else if (outline && (filled(x - 1, y) || filled(x + 1, y) || filled(x, y - 1) || filled(x, y + 1))) col = outline;
+    if (col) { g.fillStyle = col; g.fillRect((x + 1) * scale, (y + 1) * scale, scale, scale); }
+  }
+  return c.toDataURL();
+}
+const P = { w: "#fffaf2", l: "#c7bcd6", g: "#9c8e86", k: "#3b2f45", y: "#e8a33d", Y: "#ffd166", b: "#5b7fbf", B: "#8fb3ff", t: "#3b2f7a", T: "#d1678f", r: "#e05a5a", o: "#f4a259", p: "#ff8fa3", G: "#5fbf7f", d: "#2f8f83", s: "#f2c99a", n: "#7a4e2d", v: "#9d7bd8", c: "#59c3c3" };
+const ICON_MAPS = {
+  folder: ["..............", ".yyyyy........", ".yYYYYy.......", ".yyyyyyyyyyyy.", ".yYYYYYYYYYYy.", ".yYYYYYYYYYYy.", ".yYYYYYYYYYYy.", ".yYYYYYYYYYYy.", ".yYYYYYYYYYYy.", ".yYYYYYYYYYYy.", ".yyyyyyyyyyyy."],
+  notepad: ["wwwwwwwwwl..", "wwwwwwwwwll.", "wTTTTTwwwlll", "wwwwwwwwwwww", "wllllllllwww", "wwwwwwwwwwww", "wlllllllllww", "wwwwwwwwwwww", "wllllllwwwww", "wwwwwwwwwwww", "wlllllllllww", "wwwwwwwwwwww", "wwwwwwwwwwww"],
+  app: ["tttttttttttttt", "ttttttttttTwTw", "wwwwwwwwwwwwww", "wAAAAwwwwwwwww", "wAAAAwllllllww", "wAAAAwwwwwwwww", "wAAAAwlllllwww", "wwwwwwwwwwwwww", "wllllllllllllw", "wwwwwwwwwwwwww", "wwwwwwwwwwwwww"],
+  globe: ["....bbbbb....", "..bbGGbbbbb..", ".bGGGGbbbGGb.", ".bbGGbbbGGGb.", "bbbbbbbbbGGbb", "bbbbGGbbbbbbb", "bbbGGGGbbbbbb", "bbbbGGGbbbGbb", ".bbbbGbbbGGb.", ".bbbbbbbbbbb.", "..bbbbbbbbb..", "....bbbbb...."],
+  island: ["..............", ".gggggggggggg.", ".gkkkkkkkkkkg.", ".gkkkkkkkkkkg.", ".gkkkkkkkkkkg.", ".gkkkkkkkkkkg.", ".gggggggggggg.", "gggggggggggggg", "llllllllllllll", "..............", "....kkkkkk....", "...kkkkkkkk...", "....kkkkkk...."],
+  bin: ["..gggggggg..", ".gggggggggg.", "llllllllllll", ".lwlwlwlwll.", ".lwlwlwlwll.", ".lwlwlwlwll.", ".lwlwlwlwll.", ".lwlwlwlwll.", ".lwlwlwlwll.", "..llllllll.."],
+  card: ["tttttttttttttt", "wwwwwwwwwwwwww", "wvvvvwwwwwwwww", "wvvvvwlllllllw", "wvvvvwwwwwwwww", "wvvvvwllllllww", "wwwwwwwwwwwwww", "wllllllllllllw", "wwwwwwwwwwwwww"],
+  cat: ["o...o...", "oo.oo...", "ooooo...", "okoko..o", "ooooo..o", ".oooooo.", ".oooooo.", ".o.o.o.o"],
+  sun: ["....Y....", ".Y..Y..Y.", "..YYYYY..", ".YYoooYY.", "YYYoooYYY", ".YYoooYY.", "..YYYYY..", ".Y..Y..Y.", "....Y...."],
+};
+const ICON_ACCENT = { agent: "d", phone: "T", chart: "v", shield: "G", pixel: "t", book: "y", moon: "v", pipe: "c", doc: "b", face: "o", brain: "p", image: "G" };
+const iconCache = {};
+function iconURL(name) {
+  if (iconCache[name]) return iconCache[name];
+  let map, pal = { ...P };
+  if (ICON_MAPS[name]) map = ICON_MAPS[name];
+  else if (name === "globe" || name === "island") map = ICON_MAPS[name];
+  else { map = ICON_MAPS.app; pal.A = P[ICON_ACCENT[name] || "d"]; }
+  return (iconCache[name] = sprite(map, pal, { scale: 4 }));
+}
+
+/* ======================================================================
+   BEACH SCENE — 180px tall internal canvas, scaled up with no smoothing.
+   Colours, sun and moon follow the viewer's local time (?hour=21 to preview).
+   ====================================================================== */
+const scene = document.getElementById("scene");
+const sg = scene.getContext("2d");
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+const toHex = (c) => "#" + c.map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, "0")).join("");
+const mix = (a, b, f) => a.map((v, i) => v + (b[i] - v) * f);
+
+// Keyframes: hour of day → palette. Sky 9 stops (top→horizon), sea 5, sand 4.
+const NIGHT = {
+  sky: ["#05061a", "#080b26", "#0d1233", "#121a40", "#18214c", "#1e2957", "#243160", "#2a3968", "#30416f"],
+  sea: ["#070a22", "#0b1130", "#10183d", "#151f49", "#1b2754"], sand: ["#4e4760", "#463f58", "#3d374f", "#353046"],
+  stars: 1, cloud: ["#262a50", "#2e3360", "#373d6c", "#181b38"], foam: "#7f90bd", sil: "#0b0d26", trunk: ["#0b0c1e", "#14162b"], frond: ["#12302b", "#0b1f1b"], light: 0.38, gulls: 0,
+};
+const KEYS = [
+  [0, NIGHT],
+  [4.8, NIGHT],
+  [6, { sky: ["#25306a", "#354385", "#525a9c", "#7f6daa", "#ad80b0", "#d896a4", "#f2b097", "#ffcf9f", "#ffe3b9"], sea: ["#36407a", "#465a95", "#5870a8", "#6c86b9", "#8a9fca"], sand: ["#e6c7a5", "#dab592", "#cca383", "#bd9275"], stars: 0.35, cloud: ["#e8a6b4", "#f4bdbb", "#ffd6c6", "#a8789c"], foam: "#e6eeff", sil: "#3a3466", trunk: ["#3a2b4a", "#4b3a5c"], frond: ["#2f5f58", "#214640"], light: 0.8, gulls: 1 }],
+  [8.5, { sky: ["#3e7ed5", "#4a8bdf", "#5999e7", "#6aa8ed", "#7eb7f1", "#93c5f4", "#aad3f6", "#c3e1f8", "#dbedfa"], sea: ["#1d6aab", "#287cba", "#358ec6", "#48a0d1", "#62b3db"], sand: ["#f6e2bc", "#efd5a9", "#e6c695", "#dbb683"], stars: 0, cloud: ["#f4f7fb", "#ffffff", "#ffffff", "#c9d6ea"], foam: "#ffffff", sil: "#4f7fa8", trunk: ["#5a3d2b", "#74513a"], frond: ["#3f9a63", "#2c7a4c"], light: 1, gulls: 1 }],
+  [13, { sky: ["#2b7be0", "#378ae6", "#4799ec", "#5aa7f0", "#6eb5f3", "#85c3f6", "#9dd0f8", "#b6dcf9", "#d0e8fb"], sea: ["#0d68a7", "#177eb7", "#2394c5", "#33aad0", "#4cc0d8"], sand: ["#fbe8c4", "#f5dcb0", "#ecce9d", "#e1bf8a"], stars: 0, cloud: ["#f6f9fd", "#ffffff", "#ffffff", "#cfdcee"], foam: "#ffffff", sil: "#4a82b0", trunk: ["#5a3d2b", "#74513a"], frond: ["#45a86b", "#2f8452"], light: 1, gulls: 1 }],
+  [16.3, { sky: ["#3a72c9", "#4a80d0", "#5c8fd6", "#709ddb", "#87acdd", "#a0bcdc", "#bccbd7", "#d6d6cf", "#ecdcc4"], sea: ["#21609e", "#2d72ad", "#3c84b9", "#5096c3", "#69a8cc"], sand: ["#f7e0b8", "#efd1a3", "#e5c08f", "#d9af7e"], stars: 0, cloud: ["#f3ede6", "#fffaf2", "#ffffff", "#c9c6d6"], foam: "#ffffff", sil: "#4d6f9c", trunk: ["#53382a", "#6b4a36"], frond: ["#3c9160", "#2a6f48"], light: 1, gulls: 1 }],
+  [18, { sky: ["#1d1b4b", "#2f2768", "#4b3487", "#7b4fa0", "#b45f9b", "#e0738a", "#f4a07a", "#ffc98f", "#ffe0a8"], sea: ["#2b2a6b", "#34408a", "#3f5aa0", "#4d73b4", "#6a8fc6"], sand: ["#f6d2a4", "#efc08e", "#e3ab7a", "#d39a6c"], stars: 0.25, cloud: ["#f6a6a6", "#ffc2b0", "#ffd8c2", "#c97a9c"], foam: "#e9f3ff", sil: "#3a2b5e", trunk: ["#2a1d40", "#4a2f52"], frond: ["#2e6b5e", "#1f4d45"], light: 0.9, gulls: 1 }],
+  [19.3, { sky: ["#100f30", "#1a1845", "#29215b", "#3f2b6e", "#5c357c", "#7e4082", "#a24c84", "#c45f82", "#d97c7e"], sea: ["#181646", "#212358", "#2a3069", "#343e77", "#424c84"], sand: ["#b9938a", "#a9847c", "#987570", "#866764"], stars: 0.7, cloud: ["#6b4a7c", "#7d5688", "#8f6394", "#3c2a55"], foam: "#b8c2e6", sil: "#1d173f", trunk: ["#17122b", "#241b38"], frond: ["#1d3d3a", "#142c2a"], light: 0.6, gulls: 0.3 }],
+  [20.5, NIGHT],
+  [24, NIGHT],
+];
+const params = new URLSearchParams(location.search);
+function currentHour() {
+  if (params.has("hour")) return Math.max(0, Math.min(23.99, parseFloat(params.get("hour")) || 0));
+  const d = new Date();
+  return d.getHours() + d.getMinutes() / 60;
+}
+function paletteAt(h) {
+  let i = 0;
+  while (i < KEYS.length - 2 && KEYS[i + 1][0] <= h) i++;
+  const [h0, a] = KEYS[i], [h1, b] = KEYS[i + 1];
+  const f = h1 === h0 ? 0 : (h - h0) / (h1 - h0);
+  const m = (x, y) => toHex(mix(hex(x), hex(y), f));
+  return {
+    sky: a.sky.map((c, j) => hex(m(c, b.sky[j]))), sea: a.sea.map((c, j) => hex(m(c, b.sea[j]))), sand: a.sand.map((c, j) => hex(m(c, b.sand[j]))),
+    stars: a.stars + (b.stars - a.stars) * f, cloud: a.cloud.map((c, j) => m(c, b.cloud[j])), foam: m(a.foam, b.foam), sil: m(a.sil, b.sil),
+    trunk: a.trunk.map((c, j) => m(c, b.trunk[j])), frond: a.frond.map((c, j) => m(c, b.frond[j])), light: a.light + (b.light - a.light) * f, gulls: a.gulls + (b.gulls - a.gulls) * f,
+  };
+}
+const shade = (c, k) => toHex(hex(c).map((v) => v * k));
+const SUNRISE = 6, SUNSET = 18.6;
+let W = 320, H = 180, HORIZON = 112, SHORE = 141, hour = currentHour(), pal = paletteAt(hour);
+let stars = [], clouds = [], gulls = [];
+function rng(seed) { return () => ((seed = (seed * 16807) % 2147483647) / 2147483647); }
+function layoutScene() {
+  H = 180; W = Math.max(180, Math.round(H * innerWidth / innerHeight));
+  scene.width = W; scene.height = H;
+  const r = rng(7);
+  stars = Array.from({ length: Math.round(W / 6) }, () => ({ x: Math.floor(r() * W), y: Math.floor(r() * 80), p: r() }));
+  clouds = Array.from({ length: Math.max(3, Math.round(W / 110)) }, () => ({ x: r() * W, y: 22 + r() * 46, w: 26 + Math.floor(r() * 30), v: 0.03 + r() * 0.05 }));
+  gulls = Array.from({ length: 3 }, () => ({ x: r() * W, y: 40 + r() * 40, v: 0.12 + r() * 0.1, p: r() * 6 }));
+}
+function ditherBands(y0, y1, colors, img) {
+  const n = colors.length - 1;
+  for (let y = y0; y < y1; y++) {
+    const f = ((y - y0) / Math.max(1, y1 - y0 - 1)) * n;
+    const i = Math.min(n - 1, Math.floor(f)), frac = f - i;
+    for (let x = 0; x < W; x++) {
+      const c = frac * 16 > BAYER[y & 3][x & 3] ? colors[i + 1] : colors[i];
+      const o = (y * W + x) * 4;
+      img.data[o] = c[0]; img.data[o + 1] = c[1]; img.data[o + 2] = c[2]; img.data[o + 3] = 255;
+    }
+  }
+}
+let skyCache = null;
+function buildStatic() {
+  hour = currentHour(); pal = paletteAt(hour);
+  const img = sg.createImageData(W, H);
+  ditherBands(0, HORIZON, pal.sky, img);
+  ditherBands(HORIZON, SHORE, pal.sea, img);
+  ditherBands(SHORE, H, pal.sand, img);
+  skyCache = img;
+}
+function px(x, y, c, w = 1, h = 1) { sg.fillStyle = c; sg.fillRect(Math.round(x), Math.round(y), w, h); }
+// Position of a body travelling a half-sine arc between rise and set hours (handles wrap past midnight).
+function arc(rise, set, h) {
+  const span = (set - rise + 24) % 24, f = ((h - rise + 24) % 24) / span;
+  if (f < 0 || f > 1) return null;
+  const elev = Math.sin(Math.PI * f);
+  return { f, elev, x: W * (0.1 + 0.8 * f), y: HORIZON - 4 - elev * (HORIZON - 34) };
+}
+function reflection(t, cx, colA, colB, width) {
+  for (let y = HORIZON + 2; y < SHORE - 2; y += 2) {
+    const spread = width * (0.35 + (y - HORIZON) * 0.05);
+    const shimmer = reduceMotion ? 0 : Math.sin(t * 0.004 + y * 0.9) * 3;
+    const len = Math.max(2, Math.round(spread * (0.5 + 0.5 * Math.sin(y * 1.7 + t * 0.003))));
+    px(cx - len / 2 + shimmer, y, y % 4 ? colA : colB, len, 1);
+  }
+}
+function drawSun(t) {
+  const s = arc(SUNRISE, SUNSET, hour);
+  if (!s) return;
+  const low = s.elev < 0.28;
+  const R = Math.round(low ? 28 - s.elev * 20 : 18 - s.elev * 4), cx = Math.round(s.x), cy = Math.round(s.y);
+  const cols = low ? ["#fff0b8", "#ffd27a", "#ffad6b", "#ff8a7a"] : ["#fffdf0", "#fff6c8", "#ffe89a", "#ffd56e"];
+  if (!low) for (let y = -R - 3; y <= R + 3; y++) { const half = Math.floor(Math.sqrt(Math.max(0, (R + 3) ** 2 - y * y))); if (cy + y < HORIZON && (y & 1)) px(cx - half, cy + y, "rgba(255,250,220,0.18)", half * 2 + 1, 1); }
+  for (let y = -R; y <= R; y++) {
+    const yy = cy + y;
+    if (yy >= HORIZON) break;
+    if (low && y > -R * 0.35 && ((((y + 60) / 3) | 0) % 2 === 0)) continue; // retro stripes near the horizon
+    const half = Math.floor(Math.sqrt(R * R - y * y));
+    const k = (y + R) / (2 * R);
+    px(cx - half, yy, cols[Math.min(3, Math.floor(k * 4))], half * 2 + 1, 1);
+  }
+  reflection(t, cx, low ? "#ffd27a" : "#fff6d0", low ? "#ffad6b" : "#d8f0ff", low ? 30 : 16);
+}
+function drawMoon(t) {
+  const m = arc(SUNSET + 0.4, SUNRISE - 0.3, hour);
+  if (!m) return;
+  const cx = Math.round(m.x), cy = Math.round(m.y), R = 8;
+  for (let y = -R - 4; y <= R + 4; y += 2) { const half = Math.floor(Math.sqrt(Math.max(0, (R + 4) ** 2 - y * y))); if (cy + y < HORIZON) px(cx - half, cy + y, "rgba(220,225,255,0.10)", half * 2 + 1, 1); }
+  for (let y = -R; y <= R; y++) { if (cy + y >= HORIZON) break; const half = Math.floor(Math.sqrt(R * R - y * y)); px(cx - half, cy + y, "#f3efe0", half * 2 + 1, 1); }
+  [[-3, -2, 2], [2, 1, 3], [-1, 4, 1]].forEach(([dx, dy, r]) => { if (cy + dy < HORIZON) px(cx + dx, cy + dy, "#d2ccb8", r, r); });
+  reflection(t, cx, "#c9cfee", "#8f9acb", 10);
+}
+function drawIslandSilhouette() {
+  const x0 = Math.round(W * 0.08), base = HORIZON;
+  const prof = [0, 1, 2, 3, 3, 4, 5, 5, 6, 6, 7, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0];
+  prof.forEach((h, i) => px(x0 + i * 2, base - h, pal.sil, 2, h));
+}
+function drawCloud(c) {
+  const x = Math.round(c.x), y = Math.round(c.y), w = c.w, [a, b, l, d] = pal.cloud;
+  px(x, y + 3, a, w, 3); px(x + 4, y + 1, b, w - 10, 2); px(x + 8, y - 1, l, Math.max(4, w - 20), 2);
+  px(x + 2, y + 6, d, w - 4, 1);
+}
+function drawGull(g, t) {
+  const flap = reduceMotion ? 0 : Math.floor((t * 0.006 + g.p) % 2);
+  const x = Math.round(g.x), y = Math.round(g.y), c = pal.light > 0.95 ? "#3b3f5c" : "#2a1d40";
+  if (flap) { px(x, y, c); px(x + 1, y + 1, c); px(x + 2, y + 1, c); px(x + 3, y, c); }
+  else { px(x, y + 1, c); px(x + 1, y, c); px(x + 2, y, c); px(x + 3, y + 1, c); }
+}
+function drawPalm(t) {
+  const bx = Math.round(W * 0.13), by = H - 6;
+  const sway = reduceMotion ? 0 : Math.sin(t * 0.0012) * 1.2;
+  let x = bx, y = by;
+  const trunk = [];
+  for (let i = 0; i < 46; i++) { trunk.push([x, y]); y -= 1; if (i % 5 === 4) x += 1; }
+  trunk.forEach(([tx, ty], i) => { px(tx + (i > 30 ? sway * (i - 30) / 16 : 0), ty, i % 4 === 0 ? pal.trunk[0] : pal.trunk[1], 4, 1); });
+  const top = trunk[trunk.length - 1]; const tx = top[0] + 2 + sway, ty = top[1];
+  const fronds = [[-1, -0.25], [-1, 0.35], [1, -0.3], [1, 0.4], [-0.4, -1], [0.5, -0.9], [0.0, 0.7]];
+  fronds.forEach(([dx, dy], f) => {
+    for (let i = 0; i < 22; i++) {
+      const droop = i * i * 0.025;
+      const fx = tx + dx * i, fy = ty + dy * i + droop + (reduceMotion ? 0 : Math.sin(t * 0.002 + f) * i * 0.03);
+      px(fx, fy, pal.frond[0], 2, 1);
+      if (i % 2 === 0 && i > 3) px(fx, fy + 1, pal.frond[1], 1, Math.max(1, 3 - (i / 9 | 0)));
+    }
+  });
+  px(tx - 2, ty, shade("#6b3f2a", pal.light), 4, 3); // coconuts
+}
+function drawUmbrella() {
+  const k = pal.light, cx = Math.round(W * 0.78), top = SHORE + 2;
+  const red = shade("#ff8a7a", k), cream = shade("#fff0d8", k);
+  for (let y = 0; y < 8; y++) {
+    const half = 2 + y * 2;
+    for (let x = -half; x <= half; x++) px(cx + x, top + y, ((x + 40) / 4 | 0) % 2 ? red : cream);
+  }
+  px(cx, top + 8, shade("#4a2f52", k), 1, 14);
+  px(cx - 26, top + 17, shade("#59c3c3", k), 20, 4); px(cx - 26, top + 17, shade("#3a9a9a", k), 20, 1); px(cx - 26, top + 19, cream, 20, 1); // towel
+  [[0.35, 168], [0.52, 160], [0.6, 172], [0.92, 165]].forEach(([fx, y]) => { px(W * fx, y, cream, 2, 1); px(W * fx + 1, y - 1, shade("#f4a07a", k)); });
+}
+function drawShore(t) {
+  const wet = toHex(mix(pal.sand[3], [60, 40, 50], 0.25)), wet2 = toHex(mix(pal.sand[2], [60, 40, 50], 0.12));
+  const crest = toHex(mix(pal.sea[3], [255, 255, 255], 0.25));
+  for (let x = 0; x < W; x++) {
+    const wave = reduceMotion ? 0 : Math.sin(x * 0.07 + t * 0.0016) * 1.6 + Math.sin(x * 0.023 - t * 0.001) * 1.2;
+    const y = Math.round(SHORE - 1 + wave);
+    px(x, y, pal.foam); if ((x + (t / 120 | 0)) % 7 < 3) px(x, y - 1, crest);
+    px(x, y + 1, wet); px(x, y + 2, wet2);
+  }
+  for (let i = 0; i < 4; i++) { // distant wave crests
+    const y = HORIZON + 6 + i * 6;
+    for (let x = (i * 37 + (reduceMotion ? 0 : t / (90 + i * 30))) % 40; x < W; x += 40) px(x, y, crest, 6, 1);
+  }
+}
+let last = 0, lastPaletteMinute = -1;
+function frame(t) {
+  if (document.hidden) { if (!reduceMotion) requestAnimationFrame(frame); return; }
+  const minute = Math.floor(Date.now() / 60000);
+  if (minute !== lastPaletteMinute) { lastPaletteMinute = minute; buildStatic(); }
+  if (t - last >= 83 || reduceMotion) {
+    last = t;
+    sg.putImageData(skyCache, 0, 0);
+    stars.forEach((s) => { if (s.p < pal.stars && (reduceMotion || Math.sin(t * 0.002 + s.p * 40) > -0.3)) px(s.x, s.y, s.y < 30 ? "#fff8e8" : "#d7c7ff"); });
+    drawMoon(t);
+    clouds.forEach((c) => { if (!reduceMotion) { c.x += c.v; if (c.x > W + 10) c.x = -c.w - 10; } drawCloud(c); });
+    drawIslandSilhouette();
+    drawSun(t);
+    gulls.forEach((g, i) => { if (!reduceMotion) { g.x += g.v; if (g.x > W + 6) { g.x = -6; } } if (i < Math.round(pal.gulls * gulls.length)) drawGull(g, t); });
+    drawShore(t);
+    drawUmbrella();
+    drawPalm(t);
+  }
+  if (!reduceMotion) requestAnimationFrame(frame);
+}
+/** Screen-space y (CSS px) where dry sand begins; the pet must stay below this line. */
+function sandTopPx() { return ((SHORE + 4) / H) * innerHeight; }
+function initScene() { layoutScene(); buildStatic(); frame(performance.now()); if (!reduceMotion) requestAnimationFrame(frame); if (reduceMotion) setInterval(() => { buildStatic(); frame(performance.now()); }, 60000); }
+addEventListener("resize", () => { layoutScene(); buildStatic(); if (reduceMotion) frame(performance.now()); });
+
+/* ======================================================================
+   WINDOW MANAGER
+   ====================================================================== */
+const tasksEl = document.getElementById("tasks");
+const wins = new Map();
+let zTop = 20, cascade = 0;
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v; else if (k === "html") e.innerHTML = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+  }
+  kids.flat().forEach((k) => k != null && e.append(k));
+  return e;
+}
+function focusWin(id) {
+  wins.forEach((w, k) => { w.el.classList.toggle("active", k === id); w.task.classList.toggle("active", k === id && !w.el.classList.contains("min")); });
+  const w = wins.get(id); if (!w) return;
+  w.el.style.zIndex = ++zTop;
+}
+function openWindow({ id, title, icon, width = 560, height = 440, build, menu, status }) {
+  if (wins.has(id)) { const w = wins.get(id); w.el.classList.remove("min"); focusWin(id); return w; }
+  const small = innerWidth <= 700;
+  const w = Math.min(width, innerWidth - 20), h = Math.min(height, innerHeight - 70);
+  const left = small ? 0 : Math.max(8, Math.min(innerWidth - w - 8, 140 + (cascade % 6) * 28));
+  const top = small ? 0 : Math.max(8, Math.min(innerHeight - h - 52, 40 + (cascade % 6) * 24));
+  cascade++;
+  const body = el("div", { class: "body" });
+  const winEl = el("section", { class: "win opening", role: "dialog", "aria-label": title, style: `left:${left}px;top:${top}px;width:${w}px;height:${h}px` },
+    el("div", { class: "titlebar" },
+      el("img", { src: iconURL(icon), alt: "" }), el("div", { class: "t" }, title),
+      el("button", { class: "tbtn", "aria-label": "Minimize", onclick: (e) => { e.stopPropagation(); minimize(id); } }, "_"),
+      el("button", { class: "tbtn", "aria-label": "Maximize", onclick: (e) => { e.stopPropagation(); winEl.classList.toggle("max"); } }, "□"),
+      el("button", { class: "tbtn", "aria-label": "Close", onclick: (e) => { e.stopPropagation(); closeWin(id); } }, "×")),
+    menu ? el("div", { class: "menubar" }, menu) : null,
+    body,
+    el("div", { class: "statusbar" }, el("div", {}, status || "Ready")));
+  winEl.addEventListener("pointerdown", () => focusWin(id));
+  winEl.addEventListener("animationend", () => winEl.classList.remove("opening"));
+  dragify(winEl, winEl.querySelector(".titlebar"));
+  winEl.querySelector(".titlebar").addEventListener("dblclick", (e) => { if (!e.target.closest("button")) winEl.classList.toggle("max"); });
+  const task = el("button", { class: "task", title, onclick: () => { const ww = wins.get(id); if (ww.el.classList.contains("min")) { ww.el.classList.remove("min"); focusWin(id); } else if (ww.el.classList.contains("active")) minimize(id); else focusWin(id); } }, el("img", { src: iconURL(icon), alt: "" }), el("span", {}, title));
+  tasksEl.append(task);
+  document.body.append(winEl);
+  const rec = { el: winEl, task, body };
+  wins.set(id, rec);
+  build(body, rec);
+  focusWin(id);
+  return rec;
+}
+function minimize(id) { const w = wins.get(id); w.el.classList.add("min"); w.task.classList.remove("active"); }
+function closeWin(id) { const w = wins.get(id); if (!w) return; w.el.remove(); w.task.remove(); wins.delete(id); }
+function dragify(winEl, handle) {
+  let sx, sy, ox, oy, dragging = false;
+  handle.addEventListener("pointerdown", (e) => {
+    if (e.target.closest("button") || winEl.classList.contains("max") || innerWidth <= 700) return;
+    dragging = true; sx = e.clientX; sy = e.clientY; ox = winEl.offsetLeft; oy = winEl.offsetTop;
+    handle.setPointerCapture(e.pointerId); handle.style.cursor = "grabbing";
+  });
+  handle.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const nx = Math.max(-winEl.offsetWidth + 80, Math.min(innerWidth - 80, ox + e.clientX - sx));
+    const ny = Math.max(0, Math.min(innerHeight - 80, oy + e.clientY - sy));
+    winEl.style.left = nx + "px"; winEl.style.top = ny + "px";
+  });
+  const end = () => { dragging = false; handle.style.cursor = ""; };
+  handle.addEventListener("pointerup", end); handle.addEventListener("pointercancel", end);
+}
+
+/* ======================================================================
+   WINDOW CONTENT
+   ====================================================================== */
+const repoURL = (p) => (p.repo ? `${GH}/${p.repo}` : null);
+function openProject(key) {
+  const p = PROJECTS[key];
+  const tabs = [["overview", "Overview"]];
+  if (p.live && p.live.embed) tabs.push(["live", "Live preview"]);
+  if (p.repo) tabs.push(["readme", "README"]);
+  openWindow({
+    id: "p-" + key, title: p.title + (p.case ? " — case study" : ""), icon: p.icon, width: p.case ? 700 : 640, height: p.case ? 600 : 500,
+    status: p.repo ? `github.com/poshak2004/${p.repo}` : (p.live ? p.live.url.replace(/^https?:\/\//, "") : (FOLDERS.founding.items.includes(key) ? "Part of the founding-engineer portfolio" : "Private repository")),
+    build(body) {
+      body.style.display = "flex"; body.style.flexDirection = "column"; body.style.background = "var(--chrome)";
+      const tabBar = el("div", { class: "tabs", role: "tablist" });
+      const panels = el("div", { class: "body", style: "border-width:2px;flex:1;overflow:auto" });
+      body.append(tabBar, panels);
+      const made = {};
+      const show = (name) => {
+        tabBar.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.k === name)));
+        Object.values(made).forEach((m) => (m.hidden = true));
+        if (!made[name]) { made[name] = buildPanel(name, p); panels.append(made[name]); }
+        made[name].hidden = false;
+        panels.style.overflow = name === "live" ? "hidden" : "auto";
+      };
+      tabs.forEach(([k, label]) => tabBar.append(el("button", { class: "tab", role: "tab", "data-k": k, onclick: () => show(k) }, label)));
+      show("overview");
+    },
+  });
+}
+function buildPanel(name, p) {
+  if (name === "overview") {
+    const links = el("div", { class: "row", style: "margin-top:14px" });
+    if (p.live) links.append(el("a", { class: "btn primary", href: p.live.url, target: "_blank", rel: "noopener" }, "▶ " + p.live.label));
+    if (p.repo) links.append(el("a", { class: "btn", href: repoURL(p), target: "_blank", rel: "noopener" }, "⌂ Source on GitHub"));
+    else if (!p.live) links.append(el("span", { class: "btn", "aria-disabled": "true" }, "⌂ Repo not public yet"));
+    return el("div", { class: "panel pad" },
+      el("h1", {}, p.title, " ", el("span", { class: "badge " + p.status[0] }, p.status[1])),
+      el("p", {}, p.tagline),
+      p.case ? el("dl", { class: "case" }, Object.entries(p.case).map(([k, v]) => el("div", {}, el("dt", {}, k.toUpperCase()), el("dd", {}, v)))) : null,
+      p.case ? el("div", { class: "hl-title" }, "WHAT'S IN IT") : null,
+      el("ul", { class: "hl" }, p.highlights.map((h) => el("li", {}, h))),
+      el("div", { class: "chips" }, p.stack.map((s) => el("span", { class: "chip" }, s))),
+      p.note ? el("div", { class: "note" }, p.note) : null,
+      links);
+  }
+  if (name === "live") {
+    return el("div", { class: "panel", style: "height:100%" }, el("iframe", { class: "live", src: p.live.url, title: p.title + " live app", loading: "lazy", referrerpolicy: "no-referrer" }));
+  }
+  const panel = el("div", { class: "panel pad md" }, "Loading README from GitHub…");
+  loadReadme(p.repo).then((html) => { panel.innerHTML = html; }).catch(() => {
+    panel.innerHTML = ""; panel.append("Couldn't load the README right now. ", el("a", { href: repoURL(p), target: "_blank", rel: "noopener" }, "Open it on GitHub →"));
+  });
+  return panel;
+}
+async function loadReadme(repo) {
+  const res = await fetch(`https://api.github.com/repos/poshak2004/${repo}/readme`, { headers: { Accept: "application/vnd.github.raw" } });
+  if (!res.ok) throw new Error(res.status);
+  const md = await res.text();
+  const raw = `https://raw.githubusercontent.com/poshak2004/${repo}/HEAD/`;
+  const tmp = document.createElement("div");
+  tmp.innerHTML = window.DOMPurify ? DOMPurify.sanitize(marked.parse(md)) : "";
+  tmp.querySelectorAll("img[src]").forEach((i) => { const s = i.getAttribute("src"); if (!/^(https?:|data:)/.test(s)) i.src = raw + s.replace(/^\.?\//, ""); });
+  tmp.querySelectorAll("a[href]").forEach((a) => { const h = a.getAttribute("href"); if (!/^(https?:|mailto:|#)/.test(h)) a.href = `${GH}/${repo}/blob/HEAD/${h.replace(/^\.?\//, "")}`; a.target = "_blank"; a.rel = "noopener"; });
+  return tmp.innerHTML;
+}
+function openFolder(key) {
+  const f = FOLDERS[key];
+  openWindow({
+    id: "f-" + key, title: f.title, icon: "folder", width: 600, height: 400, status: `${f.items.length} object(s)`,
+    menu: [el("button", {}, "File"), el("button", {}, "View")],
+    build(body) {
+      body.append(el("p", { class: "pad", style: "padding-bottom:0;margin:0" }, f.intro));
+      const grid = el("div", { class: "explorer" });
+      f.items.forEach((k) => grid.append(iconButton({ label: PROJECTS[k].title, icon: PROJECTS[k].icon, sub: PROJECTS[k].status[1], open: () => openProject(k) })));
+      body.append(grid);
+    },
+  });
+}
+function openResume() {
+  openWindow({
+    id: "resume", title: "About_Me.txt - Notepad", icon: "notepad", width: 620, height: 560,
+    status: "Ln 1, Col 1 · UTF-8",
+    menu: [
+      el("button", { onclick: () => printResume() }, "File ▸ Print / Save PDF"),
+      el("button", { onclick: () => open(LINKEDIN, "_blank", "noopener") }, "LinkedIn"),
+      el("button", { onclick: () => open(GH, "_blank", "noopener") }, "GitHub"),
+    ],
+    build(body) {
+      const pre = el("pre", { class: "notepad", tabindex: "0" });
+      pre.innerHTML = RESUME.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]))
+        .replace("github.com/poshak2004", `<a href="${GH}" target="_blank" rel="noopener">github.com/poshak2004</a>`)
+        .replace("linkedin.com/in/poshak-k", `<a href="${LINKEDIN}" target="_blank" rel="noopener">linkedin.com/in/poshak-k</a>`)
+        .replace("poshakkotresha@gmail.com", `<a href="mailto:poshakkotresha@gmail.com">poshakkotresha@gmail.com</a>`)
+        .replace("fit24-rajajinagar.vercel.app", `<a href="https://fit24-rajajinagar.vercel.app" target="_blank" rel="noopener">fit24-rajajinagar.vercel.app</a>`);
+      body.append(pre);
+    },
+  });
+}
+function printResume() { const pr = document.getElementById("print-resume"); pr.textContent = RESUME; pr.hidden = false; print(); pr.hidden = true; }
+function openContact() {
+  openWindow({
+    id: "contact", title: "Contact", icon: "card", width: 420, height: 260, status: "Say hi",
+    build(body) {
+      body.append(el("div", { class: "pad" },
+        el("h1", {}, "Let's talk"),
+        el("p", {}, "Open to product (APM) and AI product roles in Bengaluru."),
+        el("div", { class: "row", style: "margin-top:12px" },
+          el("a", { class: "btn primary", href: "mailto:poshakkotresha@gmail.com" }, "Email"),
+          el("a", { class: "btn", href: LINKEDIN, target: "_blank", rel: "noopener" }, "LinkedIn"),
+          el("a", { class: "btn", href: GH, target: "_blank", rel: "noopener" }, "GitHub"))));
+    },
+  });
+}
+function openBin() {
+  openWindow({
+    id: "bin", title: "Recycle Bin", icon: "bin", width: 420, height: 260, status: "1 object(s)",
+    build(body) { body.append(el("div", { class: "pad" }, el("p", {}, "🗎 claims_without_tests.txt"), el("p", { style: "color:var(--muted)" }, "Deleted. Everything on this desktop is either tested, live, or labelled as not yet."))); },
+  });
+}
+
+/* ======================================================================
+   TOASTS, WELCOME TOUR, IMPACT COUNTERS, MANDATE LIVE DEMO
+   ====================================================================== */
+const sleep = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));
+function toast(title, text, icon = "notepad", ms = 5200) {
+  const t = el("div", { class: "toast", role: "status" }, el("img", { src: iconURL(icon), alt: "" }), el("div", {}, el("b", {}, title), text));
+  document.getElementById("toasts").append(t);
+  setTimeout(() => { t.classList.add("out"); setTimeout(() => t.remove(), 220); }, ms);
+}
+async function typeInto(node, text, speed = 22) {
+  const tok = (node._tok = (node._tok || 0) + 1);
+  node.classList.add("typed"); node.classList.remove("done");
+  if (reduceMotion) { node.textContent = text; node.classList.add("done"); return; }
+  for (let i = 1; i <= text.length; i++) { if (node._tok !== tok) return; node.textContent = text.slice(0, i); await sleep(speed); }
+  node.classList.add("done");
+}
+
+function openImpact() {
+  openWindow({
+    id: "impact", title: "Impact.exe — FAFF / Drona", icon: "chart", width: 600, height: 560, status: "Oct 14 – Nov 17, 2026 · 28 review days",
+    build(body) {
+      const total = el("span", { class: "bignum" }, "0");
+      const rows = [["Confirmed real", 778, "var(--ok)"], ["Severity corrected", 459, "var(--warn)"], ["False positives cut", 268, "#c0392b"]];
+      const pad = el("div", { class: "pad" },
+        el("p", {}, "AI-raised quality flags I reviewed on Drona, FAFF's failure-detection system:"),
+        el("div", { style: "margin:8px 0 6px" }, total, el("span", { style: "font-size:20px" }, "  flags reviewed")));
+      const bars = rows.map(([label, n, c]) => {
+        const i = el("i", { style: `--c:${c}` }), num = el("span", { class: "num" }, "0");
+        pad.append(el("div", { class: "stat-row" }, el("span", { class: "lbl" }, label), el("div", { class: "pbar" }, i), num));
+        return { i, num, n };
+      });
+      pad.append(el("div", { class: "kpis" },
+        el("div", { class: "kpi" }, el("span", { class: "bignum", "data-n": "6", "data-s": "+" }, "0"), "interns assessed with my tool"),
+        el("div", { class: "kpi" }, el("span", { class: "bignum", "data-n": "3" }, "0"), "products built (Mandate · Island · Career OS)"),
+        el("div", { class: "kpi" }, el("span", { class: "bignum", "data-n": "170", "data-s": "+" }, "0"), "tests behind Mandate")),
+        el("div", { class: "note" }, "Every rejected false positive is a customer who wasn't escalated for nothing — and a rubric rule to fix."));
+      body.append(pad);
+      const count = (node, to, suffix = "") => {
+        if (reduceMotion) { node.textContent = to.toLocaleString("en-IN") + suffix; return; }
+        const t0 = performance.now(), dur = 1400;
+        const tick = (t) => { const f = Math.min(1, (t - t0) / dur), v = Math.round(to * (1 - (1 - f) ** 3)); node.textContent = v.toLocaleString("en-IN") + (f === 1 ? suffix : ""); if (f < 1) requestAnimationFrame(tick); };
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(() => {
+        count(total, 1505);
+        bars.forEach(({ i, num, n }) => { i.style.width = (n / 1505 * 100).toFixed(1) + "%"; count(num, n); });
+        pad.querySelectorAll(".kpi .bignum").forEach((b) => count(b, +b.dataset.n, b.dataset.s || ""));
+      });
+    },
+  });
+}
+
+const DEMO = [
+  { buyer: "Buyer offers ₹1,200.", wants: "Accept the deal", bad: "Sold for ₹1,200, ₹300 below the seller's minimum.", v: "block", label: "BLOCKED", why: "Below the seller's ₹1,500 minimum." },
+  { buyer: "Buyer asks where the seller lives.", wants: "Share the seller's home address", bad: "Home address sent to a stranger.", v: "block", label: "BLOCKED", why: "The seller said: never share my address." },
+  { buyer: "Buyer offers ₹1,600.", wants: "Accept the deal", bad: "Sold for ₹1,600. Fine, this time.", fine: true, v: "allow", label: "ALLOWED", why: "Within the seller's rules." },
+  { buyer: "Buyer wants to meet at a metro station.", wants: "Book the meetup", bad: "Meetup booked without asking the seller.", v: "ask", label: "ASKED THE SELLER", why: "Meetups need the seller's OK. The seller tapped Approve, so it went ahead." },
+];
+function openMandateDemo() {
+  openWindow({
+    id: "mandate-demo", title: "Mandate_Demo.exe", icon: "shield", width: 780, height: 640,
+    status: "Example scenario, based on a real 2026 incident with an AI shopping agent",
+    build(body) {
+      let run = 0;
+      const rows = el("div", {}), score = el("div", { class: "score" });
+      const replay = el("button", { class: "btn primary", onclick: () => play() }, "↻ Play again");
+      body.append(el("div", { class: "pad" },
+        el("h1", {}, "What happens when an AI agent sells your stuff for you?"),
+        el("p", {}, "An AI agent is selling a keyboard on behalf of a seller. Below: the same 4 moments, without Mandate and with it."),
+        el("div", { class: "rules" },
+          el("div", { class: "who" }, "THE SELLER'S", el("br"), "RULES"),
+          el("ul", {}, el("li", {}, "Don't sell for less than ₹1,500"), el("li", {}, "Never share my home address"), el("li", {}, "Ask me before booking any meetup"))),
+        el("div", { class: "vs-head" }, el("span", {}, "WHAT THE AGENT WANTS TO DO"), el("span", { class: "bad" }, "WITHOUT MANDATE"), el("span", { class: "good" }, "WITH MANDATE")),
+        rows, score,
+        el("div", { class: "row", style: "margin-top:12px" }, replay,
+          el("a", { class: "btn", href: GH + "/mandate", target: "_blank", rel: "noopener" }, "⌂ Code on GitHub"),
+          el("button", { class: "btn", onclick: () => openProject("mandate") }, "Read the case study")),
+        el("details", { class: "tech" }, el("summary", {}, "How it works, for engineers"),
+          el("p", {}, "The agent never acts directly. It sends a proposal; Mandate checks it against the seller's written rules with plain code (no AI model in the decision) and answers allow, block or ask-a-human. Every answer is saved as a signed receipt, linked to the one before it, so nobody can quietly edit the history."))));
+      async function play() {
+        const me = ++run; rows.replaceChildren(); score.replaceChildren();
+        for (const d of DEMO) {
+          await sleep(500); if (me !== run || !wins.has("mandate-demo")) return;
+          const badCell = el("div", { class: "vs-bad vs-hidden" + (d.fine ? " ok" : "") }, el("span", { class: "verdict " + (d.fine ? "fine" : "oops") }, d.fine ? "OK" : "MISTAKE"), el("br"), d.bad);
+          const goodCell = el("div", { class: "vs-good " + d.v + " vs-hidden" }, el("span", { class: "verdict " + d.v }, d.label), el("br"), d.why);
+          rows.append(el("div", { class: "vs-row" }, el("div", { class: "vs-ask" }, el("small", {}, d.buyer), "Agent wants to: ", el("b", {}, d.wants)), badCell, goodCell));
+          await sleep(900); if (me !== run) return; badCell.classList.remove("vs-hidden");
+          await sleep(700); if (me !== run) return; goodCell.classList.remove("vs-hidden");
+        }
+        await sleep(600); if (me !== run) return;
+        score.append(
+          el("div", { class: "bad" }, el("span", { class: "bignum" }, "3 mistakes"), "made in the seller's name, without asking"),
+          el("div", { class: "good" }, el("span", { class: "bignum" }, "0 mistakes"), "2 blocked, 1 checked with the seller, 1 allowed"));
+      }
+      play();
+    },
+  });
+}
+
+/* ======================================================================
+   DESKTOP ICONS + START MENU
+   ====================================================================== */
+const DESKTOP = [
+  { label: "Mandate_Demo.exe", icon: "shield", open: openMandateDemo, isNew: true },
+  { label: "About_Me.txt", icon: "notepad", open: openResume },
+  { label: "Impact.exe", icon: "chart", open: openImpact },
+  { label: "Mandate", icon: "shield", open: () => openProject("mandate") },
+  { label: "Island", icon: "island", open: () => openProject("island") },
+  { label: "Fit 24 Website", icon: "globe", open: () => openProject("fit24") },
+  { label: "More Projects", icon: "folder", open: () => openFolder("more") },
+  { label: "Contact", icon: "card", open: openContact },
+  { label: "Recycle Bin", icon: "bin", open: openBin },
+];
+const coarse = matchMedia("(pointer: coarse)").matches;
+function iconButton({ label, icon, sub, open: doOpen, isNew }) {
+  const b = el("button", { class: "icon" + (isNew ? " new" : ""), title: label }, el("img", { src: iconURL(icon), alt: "" }), el("span", {}, label), sub ? el("span", { class: "sub" }, sub) : null);
+  b.addEventListener("click", (e) => {
+    document.querySelectorAll(".icon.selected").forEach((i) => i.classList.remove("selected"));
+    b.classList.add("selected");
+    if (coarse || e.detail === 0) doOpen(); // tap on touch, or Enter/Space on keyboard
+  });
+  b.addEventListener("dblclick", doOpen);
+  return b;
+}
+function buildDesktop() {
+  const d = document.getElementById("desktop");
+  DESKTOP.forEach((i) => d.append(iconButton(i)));
+  document.querySelectorAll("#sticky [data-open]").forEach((b) => b.addEventListener("click", () => (b.dataset.open === "demo" ? openMandateDemo() : openResume())));
+  d.addEventListener("pointerdown", (e) => { if (e.target === d) document.querySelectorAll(".icon.selected").forEach((i) => i.classList.remove("selected")); });
+}
+const startBtn = document.getElementById("start"), startMenu = document.getElementById("startmenu");
+function toggleStart(force) {
+  const openNow = force ?? startMenu.hidden;
+  startMenu.hidden = !openNow; startBtn.setAttribute("aria-expanded", String(openNow));
+  if (openNow) startMenu.querySelector("button")?.focus();
+}
+function buildStart() {
+  document.getElementById("start-logo").src = sprite(ICON_MAPS.sun, P, { scale: 3, outline: null });
+  const items = [
+    ["Start here: Mandate live demo", "shield", openMandateDemo],
+    ["About me / Resume", "notepad", openResume],
+    ["Impact in numbers", "chart", openImpact],
+    ["Mandate (case study)", "shield", () => openProject("mandate")],
+    ["Island (case study)", "island", () => openProject("island")],
+    ["Fit 24 Website (case study)", "globe", () => openProject("fit24")],
+    ["More projects", "folder", () => openFolder("more")],
+    null,
+    ["Throw yarn for pet", "cat", () => throwYarn()],
+    ["Swap pet (cat / dog)", "cat", () => swapPet()],
+    null,
+    ["Shut down…", "sun", shutDown],
+  ];
+  const ul = document.getElementById("startlist");
+  items.forEach((it) => {
+    if (!it) return ul.append(el("li", {}, el("hr")));
+    const [label, icon, fn] = it;
+    ul.append(el("li", { role: "none" }, el("button", { role: "menuitem", onclick: () => { toggleStart(false); fn(); } }, el("img", { src: iconURL(icon), alt: "" }), label)));
+  });
+  startBtn.addEventListener("click", (e) => { e.stopPropagation(); toggleStart(); });
+  document.addEventListener("pointerdown", (e) => { if (!startMenu.hidden && !startMenu.contains(e.target) && e.target !== startBtn && !startBtn.contains(e.target)) toggleStart(false); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") toggleStart(false); });
+}
+function shutDown() { document.getElementById("off").hidden = false; }
+document.getElementById("off").addEventListener("click", () => { document.getElementById("off").hidden = true; boot(); });
+function tickClock() { document.getElementById("clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
+
+/* ======================================================================
+   PET — procedurally drawn pixel cat/dog that follows the cursor
+   ====================================================================== */
+const petEl = document.getElementById("pet"), pg = petEl.getContext("2d");
+const yarnEl = document.getElementById("yarn"), yg = yarnEl.getContext("2d");
+const PET_STYLES = {
+  cat: { fur: "#f4a259", dark: "#c9733a", light: "#ffe8cc", line: "#2b1d2e", accent: "#ff8fa3" },
+  dog: { fur: "#c08552", dark: "#7a4e2d", light: "#f6e3c6", line: "#2b1d2e", accent: "#5c3a22" },
+};
+let petKind = "cat";
+try { petKind = localStorage.getItem("pet") === "dog" ? "dog" : "cat"; } catch (e) {}
+function drawPet(kind, pose, step) {
+  const Wd = 22, Hd = 18, S = PET_STYLES[kind];
+  const grid = Array.from({ length: Hd }, () => Array(Wd).fill(null));
+  const set = (x, y, c) => { x = Math.round(x); y = Math.round(y); if (x >= 0 && x < Wd && y >= 0 && y < Hd) grid[y][x] = c; };
+  const ell = (cx, cy, rx, ry, c) => { for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++) for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x++) if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1) set(x, y, c); };
+  let head;
+  if (pose === "sleep") {
+    ell(10, 13.5, 7, 2.6, S.fur); head = [16, 12.5];
+    ell(head[0], head[1], 3.2, 2.8, S.fur);
+    for (let x = 3; x <= 8; x++) set(x, 16, S.dark);
+  } else if (pose === "sit") {
+    ell(10, 12, 4.4, 3.8, S.fur); head = [13.5, 6];
+    ell(head[0], head[1], 3.6, 3.2, S.fur);
+    set(11, 16, S.light); set(12, 16, S.light); set(14, 16, S.light); set(15, 16, S.light);
+    for (let x = 4; x <= 8; x++) set(x, 16, S.dark);
+    set(4, 15, S.dark);
+  } else {
+    ell(9.5, 10.5, 6.6, 3.2, S.fur); head = [16, 6.6];
+    ell(head[0], head[1], 3.6, 3.2, S.fur);
+    const legs = step % 2 ? [4, 7, 11, 14] : [5, 8, 12, 13];
+    legs.forEach((lx, i) => { for (let y = 13; y <= 15; y++) set(lx + (i % 2 ? 0 : 0), y, y === 15 ? S.light : S.fur); });
+  }
+  const [hx, hy] = head;
+  // stripes / patches and chest
+  if (kind === "cat" && pose !== "sleep") { set(hx - 7, hy + 3, S.dark); set(hx - 7, hy + 4, S.dark); set(hx - 4, hy + 3, S.dark); set(hx - 4, hy + 4, S.dark); }
+  if (kind === "dog" && pose !== "sleep") { ell(hx - 6, hy + 4, 1.6, 1.2, S.light); }
+  set(hx - 1, hy + 3, S.light); set(hx, hy + 3, S.light);
+  // ears
+  if (kind === "cat") {
+    for (let i = 0; i < 3; i++) for (let x = 0; x <= i; x++) { set(hx - 3 + x, hy - 4 + i, S.fur); set(hx + 2 - x + 0, hy - 4 + i, S.fur); }
+    set(hx - 3, hy - 2, S.accent); set(hx + 2, hy - 2, S.accent);
+  } else {
+    for (let y = -2; y <= 2; y++) { set(hx - 3, hy + y, S.accent); set(hx - 4, hy + y + 1, S.accent); }
+    set(hx + 3, hy + 1, S.light); set(hx + 4, hy + 1, S.light); set(hx + 4, hy + 2, S.light); set(hx + 5, hy + 1, S.line);
+  }
+  // tail
+  const tailCat = step % 2 ? [[2, 9], [1, 8], [1, 7], [0, 6], [0, 5], [1, 4]] : [[2, 9], [1, 8], [0, 7], [0, 6], [1, 5], [2, 4]];
+  const tailDog = step % 2 ? [[3, 8], [2, 7], [2, 6], [1, 5]] : [[3, 8], [3, 7], [3, 6], [4, 5]];
+  if (pose === "walk") (kind === "cat" ? tailCat : tailDog).forEach(([x, y]) => set(x, y, kind === "cat" ? S.dark : S.fur));
+  if (pose === "sit") (kind === "cat" ? [[5, 13], [4, 14]] : [[5, 11], [4, 10], [4, 9]]).forEach(([x, y]) => set(x, y, S.fur));
+  // outline
+  const out = grid.map((r) => r.slice());
+  for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) if (!grid[y][x]) {
+    const n = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => grid[y + dy]?.[x + dx]);
+    if (n) out[y][x] = S.line;
+  }
+  // face
+  const eyeY = Math.round(hy - (pose === "sleep" ? 0 : 0.5));
+  if (pose === "sleep" || pose === "happy") { out[eyeY][Math.round(hx - 1)] = S.line; out[eyeY][Math.round(hx + 1)] = S.line; out[eyeY][Math.round(hx + 2)] = S.line; out[eyeY][Math.round(hx - 2)] = S.line; }
+  else { out[eyeY][Math.round(hx - 1)] = S.line; out[eyeY][Math.round(hx + 2)] = S.line; }
+  if (kind === "cat") out[Math.round(hy + 1)][Math.round(hx + 1)] = S.accent;
+  pg.clearRect(0, 0, Wd, Hd);
+  out.forEach((row, y) => row.forEach((c, x) => { if (c) { pg.fillStyle = c; pg.fillRect(x, y, 1, 1); } }));
+}
+function drawYarn() {
+  yg.clearRect(0, 0, 8, 8);
+  const m = ["..pppp..", ".pPppPp.", "pppPPppp", "pPppppPp", "ppPPpppp", "pppppPpp", ".pPpppp.", "..pppp.."];
+  m.forEach((r, y) => [...r].forEach((ch, x) => { if (ch !== ".") { yg.fillStyle = ch === "P" ? "#b23a6b" : "#ff6b9a"; yg.fillRect(x, y, 1, 1); } }));
+}
+const pet = { x: innerWidth * 0.5, y: innerHeight - 60, vx: 0, face: 1, pose: "sit", step: 0, idle: 0, happy: 0, hidden: false };
+const mouse = { x: innerWidth * 0.55, y: innerHeight * 0.6, moved: 0 };
+const yarn = { active: false, x: 0, y: 0, vx: 0, vy: 0 };
+addEventListener("pointermove", (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.moved = performance.now(); });
+function bubble(x, y, text, cls = "") { const b = el("div", { class: "bubble " + cls, style: `left:${x}px;top:${y}px` }, text); document.body.append(b); setTimeout(() => b.remove(), 1400); }
+let pets = 0;
+petEl.addEventListener("click", (e) => {
+  e.stopPropagation();
+  pet.happy = 70; pet.idle = 0; pets++;
+  for (let i = 0; i < 3; i++) setTimeout(() => bubble(pet.x - 10 + Math.random() * 30, pet.y - 50, "♥", "heart"), i * 120);
+  bubble(pet.x - 10, pet.y - 70, petKind === "cat" ? (pets % 5 ? "prrr" : "meow!") : (pets % 5 ? "wag wag" : "woof!"));
+});
+function throwYarn(x, y) {
+  yarn.active = true; yarnEl.hidden = false;
+  yarn.x = x ?? Math.random() * (innerWidth - 80) + 40; yarn.y = y ?? innerHeight * 0.4;
+  yarn.vx = (Math.random() - 0.5) * 14; yarn.vy = -6 - Math.random() * 4;
+}
+function swapPet() { petKind = petKind === "cat" ? "dog" : "cat"; try { localStorage.setItem("pet", petKind); } catch (e) {} bubble(pet.x, pet.y - 60, petKind === "cat" ? "meow" : "woof"); updateTrayPet(); }
+function updateTrayPet() { document.getElementById("tray-pet-img").src = sprite(ICON_MAPS.cat, { ...P, k: "#1d1530", o: PET_STYLES[petKind].fur }, { scale: 3, outline: null }); }
+document.getElementById("tray-pet").addEventListener("click", () => { pet.hidden = !pet.hidden; });
+document.getElementById("desktop").addEventListener("dblclick", (e) => { if (e.target.id === "desktop") throwYarn(e.clientX, e.clientY); });
+// kick the yarn by clicking it
+yarnEl.addEventListener("pointerdown", (e) => { e.stopPropagation(); yarn.vx = (yarn.x - pet.x > 0 ? 1 : -1) * (8 + Math.random() * 6); yarn.vy = -9; });
+let petLast = 0;
+function petLoop(t) {
+  if (document.hidden) { petLast = t; return requestAnimationFrame(petLoop); }
+  const dt = Math.min(50, t - petLast || 16) / 16.67; petLast = t;
+  const floor = innerHeight - 44 - 6;
+  if (yarn.active) {
+    yarn.vy += 0.6 * dt; yarn.x += yarn.vx * dt; yarn.y += yarn.vy * dt;
+    if (yarn.y > floor - 12) { yarn.y = floor - 12; yarn.vy *= -0.45; yarn.vx *= 0.9; }
+    if (yarn.y < sandTopPx() - 200 && yarn.vy < 0) yarn.vy = 0;
+    if (yarn.x < 12 || yarn.x > innerWidth - 12) { yarn.vx *= -0.8; yarn.x = Math.max(12, Math.min(innerWidth - 12, yarn.x)); }
+    yarn.vx *= 0.995;
+    yarnEl.style.transform = `translate(${yarn.x - 12}px, ${yarn.y - 12}px) rotate(${(yarn.x * 6) % 360}deg)`;
+  }
+  const fullscreenWin = innerWidth <= 700 && [...wins.values()].some((w) => !w.el.classList.contains("min"));
+  petEl.style.visibility = fullscreenWin || pet.hidden ? "hidden" : "visible";
+  // The pet lives on the dry sand: x follows the cursor, y is clamped between the shoreline and
+  // the taskbar, so it never wanders into the sea or across the sky.
+  const sandTop = sandTopPx() + petEl.offsetHeight * 0.85;
+  const clampY = (y) => Math.max(sandTop, Math.min(floor, y));
+  const tx = Math.max(petEl.offsetWidth / 2, Math.min(innerWidth - petEl.offsetWidth / 2, yarn.active ? yarn.x : mouse.x));
+  const target = { x: tx, y: clampY(yarn.active ? yarn.y + 14 : mouse.y + 30) };
+  const dx = target.x - pet.x, dy = target.y - pet.y, dist = Math.hypot(dx, dy);
+  const stopAt = yarn.active ? 14 : 40;
+  if (pet.happy > 0) { pet.happy -= dt; pet.pose = "happy"; }
+  else if (dist > stopAt) {
+    const sp = (yarn.active ? 4.6 : 3.4) * dt * Math.min(1, dist / 120 + 0.35);
+    pet.x += (dx / dist) * sp; pet.y += (dy / dist) * sp;
+    if (Math.abs(dx) > 2) pet.face = dx > 0 ? 1 : -1;
+    pet.pose = "walk"; pet.idle = 0;
+  } else {
+    if (yarn.active) { yarn.active = false; yarnEl.hidden = true; pet.happy = 60; bubble(pet.x, pet.y - 60, "got it!"); for (let i = 0; i < 3; i++) setTimeout(() => bubble(pet.x - 10 + Math.random() * 30, pet.y - 50, "♥", "heart"), i * 120); }
+    pet.idle += dt;
+    pet.pose = pet.idle > 480 ? "sleep" : "sit";
+    if (pet.pose === "sleep" && Math.random() < 0.012) bubble(pet.x + 16, pet.y - 50, "z");
+  }
+  pet.y = clampY(pet.y);
+  pet.step = Math.floor(t / 140);
+  drawPet(petKind, pet.pose === "happy" ? "sit" : pet.pose, pet.step);
+  if (pet.pose === "happy") { // closed happy eyes
+    const S = PET_STYLES[petKind]; pg.fillStyle = S.line; pg.fillRect(12, 5, 2, 1); pg.fillRect(15, 5, 2, 1);
+  }
+  const wpx = petEl.offsetWidth, hpx = petEl.offsetHeight;
+  petEl.style.transform = `translate(${pet.x - wpx / 2}px, ${pet.y - hpx}px) scaleX(${pet.face})`;
+  requestAnimationFrame(petLoop);
+}
+
+/* ======================================================================
+   BOOT
+   ====================================================================== */
+function boot() {
+  const b = document.getElementById("boot");
+  b.hidden = false;
+  setTimeout(() => { b.hidden = true; }, reduceMotion ? 200 : 1300);
+}
+initScene();
+buildDesktop();
+buildStart();
+drawYarn();
+updateTrayPet();
+tickClock(); setInterval(tickClock, 15000);
+requestAnimationFrame(petLoop);
+boot();
+</script>
+</body>
+</html>
