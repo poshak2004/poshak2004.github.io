@@ -140,11 +140,11 @@
   #startmenu hr { border: 0; border-top: 2px groove var(--chrome-hi); margin: 4px 2px; }
 
   /* ---------- pet ---------- */
-  #pet { position: fixed; left: 0; top: 0; z-index: 900; width: 66px; height: 54px; image-rendering: pixelated; cursor: pointer; touch-action: none; }
-  .bubble { position: fixed; z-index: 901; pointer-events: none; font-family: var(--font-pixel); font-size: 10px; color: #fff; text-shadow: 2px 2px 0 #1d1530; animation: floatup 1.4s steps(10) forwards; }
+  #pet { position: fixed; left: 0; top: 0; z-index: 6; width: 66px; height: 54px; image-rendering: pixelated; cursor: pointer; touch-action: none; }
+  .bubble { position: fixed; z-index: 7; pointer-events: none; font-family: var(--font-pixel); font-size: 10px; color: #fff; text-shadow: 2px 2px 0 #1d1530; animation: floatup 1.4s steps(10) forwards; }
   .bubble.heart { color: #ff6b8b; font-size: 14px; }
   @keyframes floatup { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-46px); opacity: 0; } }
-  #yarn { position: fixed; z-index: 899; width: 24px; height: 24px; image-rendering: pixelated; cursor: grab; touch-action: none; }
+  #yarn { position: fixed; z-index: 5; width: 24px; height: 24px; image-rendering: pixelated; cursor: grab; touch-action: none; }
   #yarn[hidden] { display: none; }
 
   /* ---------- boot / shutdown ---------- */
@@ -804,6 +804,10 @@ function el(tag, attrs = {}, ...kids) {
 function focusWin(id) {
   wins.forEach((w, k) => { w.el.classList.toggle("active", k === id); w.task.classList.toggle("active", k === id && !w.el.classList.contains("min")); });
   const w = wins.get(id); if (!w) return;
+  if (zTop >= 800) { // renumber so windows never climb above the taskbar (1000)
+    zTop = 20;
+    [...wins.values()].sort((a, b) => (+a.el.style.zIndex || 0) - (+b.el.style.zIndex || 0)).forEach((x) => { x.el.style.zIndex = ++zTop; });
+  }
   w.el.style.zIndex = ++zTop;
 }
 function openWindow({ id, title, icon, width = 560, height = 440, build, menu, status }) {
