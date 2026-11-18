@@ -331,7 +331,7 @@ const PROJECTS = {
     live: { label: "Open live site", url: "https://fit24-rajajinagar.vercel.app", embed: true },
   },
   errand: {
-    title: "WhatsApp Errand Agent", icon: "agent", status: ["wip", "In progress"],
+    title: "WhatsApp Errand Agent", icon: "agent", status: ["local", "Built · paused"],
     tagline: "Founding-engineer portfolio #1 — an AI errand assistant on WhatsApp with long-term memory.",
     highlights: [
       "Claude tool-calling loop with a step cap, a tool-failure budget, and honest human handoff",
@@ -340,7 +340,7 @@ const PROJECTS = {
       "Operator handoff API and product metrics computed from database rows",
     ],
     stack: ["Python", "FastAPI", "Claude API", "PostgreSQL", "pgvector", "pytest"],
-    note: "Core system built and tested with a scripted model. Live-model testing and real-user testing not completed yet; repository not published yet.",
+    note: "Core system built; 57 automated tests pass against a scripted model and real Postgres + pgvector. Paused while I build project #2: live-model tests, deployment and real-user testing are not done yet, and the repository is not published yet.",
   },
   voice: { title: "Voice Booking Agent", icon: "phone", status: ["plan", "Planned"], tagline: "Founding-engineer portfolio #2 — calls a business, handles a real conversation, returns a structured call record.", highlights: ["Telephony provider abstraction", "Confidence threshold → safe human fallback"], stack: ["Python", "FastAPI", "STT / TTS", "Claude"], note: "Not started yet." },
   browser: { title: "Browser Agent", icon: "globe", status: ["plan", "Planned"], tagline: "Founding-engineer portfolio #3 — operates websites with Playwright and stops for human approval before anything irreversible.", highlights: ["Replayable execution trace with screenshots", "Approval gate before submit / pay / send"], stack: ["Python", "Playwright", "Claude"], note: "Not started yet." },
