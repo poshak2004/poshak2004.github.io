@@ -231,12 +231,12 @@
 <canvas id="scene" aria-hidden="true"></canvas>
 
 <main id="desktop" aria-label="Desktop"></main>
-<div class="hint"><b>Start here → Mandate_Demo.exe</b><br>double-click an icon to open · click the pet</div>
+<div class="hint"><b>Start here → Mandate Demo</b><br>double-click an icon to open · click the pet</div>
 <aside id="sticky" aria-label="About this site">
   <div class="pin" aria-hidden="true"></div>
   <strong>Poshak Kotresha</strong>
-  <span>APM candidate · builds AI products</span>
-  <span>Ops at FAFF · 1,505 AI failures reviewed</span>
+  <span>CX at FAFF · AI products · builder</span>
+  <span>1,505 AI quality flags reviewed</span>
   <div class="links"><button type="button" data-open="demo">▶ Mandate demo</button><button type="button" data-open="resume">Resume</button></div>
 </aside>
 
@@ -282,7 +282,7 @@ const LINKEDIN = "https://linkedin.com/in/poshak-k";
 
 const PROJECTS = {
   mandate: {
-    title: "Mandate", repo: "mandate", icon: "shield", status: ["live", "Founder · open source"],
+    title: "Mandate", repo: "mandate", icon: "shield", status: ["live", "Public repo"],
     tagline: "A deterministic authorization layer for AI agents that act for people: agents propose, a rule engine decides, every decision leaves a signed receipt.",
     highlights: [
       "Born at FAFF: AI agents booking, paying and messaging for customers could approve their own risky actions",
@@ -331,7 +331,7 @@ const PROJECTS = {
     live: { label: "Open live site", url: "https://fit24-rajajinagar.vercel.app", embed: true },
   },
   errand: {
-    title: "WhatsApp Errand Agent", icon: "agent", status: ["local", "Built · paused"],
+    title: "WhatsApp Errand Agent", icon: "agent", status: ["wip", "In progress"],
     tagline: "Founding-engineer portfolio #1 — an AI errand assistant on WhatsApp with long-term memory.",
     highlights: [
       "Claude tool-calling loop with a step cap, a tool-failure budget, and honest human handoff",
@@ -340,11 +340,12 @@ const PROJECTS = {
       "Operator handoff API and product metrics computed from database rows",
     ],
     stack: ["Python", "FastAPI", "Claude API", "PostgreSQL", "pgvector", "pytest"],
-    note: "Core system built; 57 automated tests pass against a scripted model and real Postgres + pgvector. Paused while I build project #2: live-model tests, deployment and real-user testing are not done yet, and the repository is not published yet.",
+    note: "Core system built and tested with a scripted model. Live-model testing and real-user testing not completed yet; repository not published yet.",
   },
   voice: { title: "Voice Booking Agent", icon: "phone", status: ["plan", "Planned"], tagline: "Founding-engineer portfolio #2 — calls a business, handles a real conversation, returns a structured call record.", highlights: ["Telephony provider abstraction", "Confidence threshold → safe human fallback"], stack: ["Python", "FastAPI", "STT / TTS", "Claude"], note: "Not started yet." },
   browser: { title: "Browser Agent", icon: "globe", status: ["plan", "Planned"], tagline: "Founding-engineer portfolio #3 — operates websites with Playwright and stops for human approval before anything irreversible.", highlights: ["Replayable execution trace with screenshots", "Approval gate before submit / pay / send"], stack: ["Python", "Playwright", "Claude"], note: "Not started yet." },
   evals: { title: "Agent QA Scoring", icon: "chart", status: ["plan", "Planned"], tagline: "Founding-engineer portfolio #4 — Claude-as-judge vs human labels on synthetic agent conversations.", highlights: ["Rubric: completion, accuracy, tools, safety, handoff, efficiency", "Agreement, precision/recall, confusion matrix"], stack: ["Python", "Claude", "Dashboard"], note: "Not started yet." },
+  governor: { title: "Agent Approval Layer", icon: "shield", status: ["plan", "Planned"], tagline: "Founding-engineer portfolio #5 — open-source deterministic ALLOW / BLOCK / ESCALATE policy layer for agent tool calls.", highlights: ["Policy engine + approvals + audit log", "Python package with FastAPI demo"], stack: ["Python", "FastAPI", "pytest"], note: "Not started yet." },
 
   pixel: {
     title: "PIXEL Workbench", repo: "pixel-ai-workbench", icon: "pixel", status: ["local", "Desktop app"],
@@ -434,14 +435,14 @@ const PROJECTS = {
 };
 
 const FOLDERS = {
-  founding: { title: "Founding Engineer", items: ["errand", "voice", "browser", "evals"], intro: "Four connected projects: memory + voice + browser + evaluation. Governance is covered by Mandate. Built one at a time; statuses are real." },
+  founding: { title: "Founding Engineer", items: ["errand", "voice", "browser", "evals", "governor"], intro: "Five connected projects: memory + voice + browser + evaluation + governance. Built one at a time; statuses are real." },
   more: { title: "More Projects", items: ["careeros", "pixel", "study", "luna", "errand", "yolo", "fraud", "face", "pipeline", "tumor", "imgcls"], intro: "Work in progress and earlier builds: agents, ML and computer vision." },
   mlcv: { title: "ML & Computer Vision", items: ["yolo", "fraud", "face", "pipeline", "tumor", "imgcls"], intro: "Where it started: ML and CV projects." },
 };
 
 const RESUME = `POSHAK KOTRESHA
-Builder of AI products · AI operations · agent governance
-Bengaluru, India · open to Product (APM) and AI product roles
+Customer experience · AI products · Builder
+Bengaluru, India · available Apr - Aug 2027
 
 Email     poshakkotresha@gmail.com
 GitHub    github.com/poshak2004
@@ -450,30 +451,55 @@ LinkedIn  linkedin.com/in/poshak-k
 ------------------------------------------------------------
 ABOUT
 ------------------------------------------------------------
-I work where AI agents meet real customers: I review what
-goes wrong, and I ship the tools that stop it.
-
-Days: the operations side of a live AI-assistant product.
-Evenings: the engineering side. Seeing both is why my work is
-about control, reliability and humans-in-the-loop, not just
-model calls.
+2026 graduate, promoted from operations to CX in five months
+at an AI personal-assistant startup. I find where AI agents
+fail customers and help fix it, and I build my own AI
+products.
 
 ------------------------------------------------------------
 EXPERIENCE
 ------------------------------------------------------------
 FAFF (AI personal-assistant startup), Bengaluru
-AI Operations Analyst, CX · May 2026 - present
-  Joined as Operations Executive; promoted to CX / AI ops.
-  - Reviewed 1,505 AI-raised quality flags across 28 review
-    days on Drona, FAFF's failure-detection system:
-    confirmed 778, corrected severity on 459, rejected 268
-    false positives, sharpening the escalation rubric.
-  - Wrote root-cause analyses on failed assistant tasks,
-    separating agent, ops and vendor faults.
-  - Stress-tested the assistant end to end as a customer.
-  - Trained incoming interns on operations; built an
-    Operator Capability Assessment (7 dimensions, admin
-    leaderboard) used to evaluate 6+ interns.
+May 2026 - Present
+
+AI Operations Analyst, CX · Oct 2026 - Present
+  - Present root-cause analyses (what failed, why, the fix)
+    in daily reviews with the founders, tech team and
+    system owners, as one of the 5-person CX team that
+    owns the CX score.
+  - Review AI-raised quality flags on Drona, FAFF's
+    failure-detection system: 1,505 so far, confirming 778,
+    re-grading 459 and rejecting 268 as false alarms (18%).
+  - Trace each failure to its source (agent, operations or
+    vendor), and stress-test flows as a customer.
+
+Operations Executive · May - Oct 2026
+  - Helped design the metrics FAFF uses to rate its
+    operations staff.
+  - Trained new interns on operations; built a 7-dimension
+    work-simulation assessment used to evaluate 6+ interns.
+
+------------------------------------------------------------
+PROJECTS
+------------------------------------------------------------
+Mandate (personal project · TypeScript, Python)
+  Agents propose, a rule engine decides: less flexible than
+  AI judgement, but predictable and auditable, with a human
+  asked on high-risk actions. Grew from my Governor
+  prototype: policy engine, signed audit receipts, console,
+  TypeScript + Python SDKs, 170+ tests.
+
+Island (solo · Swift, SwiftUI, AppKit)
+  The iPhone Dynamic Island for the MacBook notch: media,
+  timers, downloads, AI search, ~0.1% idle CPU. Open source.
+
+Pixel (solo · Rust, Swift, AppKit · private)
+  A private command bar for the Mac with every action
+  permission-checked before it runs.
+
+Fit 24 website (for a local gym)
+  fit24-rajajinagar.vercel.app · mobile-first, built with
+  the owner from research to launch.
 
 ------------------------------------------------------------
 EDUCATION
@@ -482,59 +508,16 @@ Dr. Ambedkar Institute of Technology, Bengaluru
 B.E., Information Science & Engineering · 2022 - 2026
 
 ------------------------------------------------------------
-PRODUCTS BUILT
+SKILLS & CERTIFICATES
 ------------------------------------------------------------
-Mandate (founder · TypeScript, Python)
-  Deterministic authorization layer for AI agents: agents
-  propose, a rule engine decides, no LLM in the decision.
-  Grew from the Governor demo into a product: policy
-  engine, signed hash-chained receipts, API, console,
-  TypeScript + Python SDKs, 170+ tests.
-
-Island (solo · Swift, SwiftUI, AppKit)
-  Native Dynamic Island for the MacBook notch: media,
-  timers, downloads, mic/camera, search with cited AI
-  answers, ~0.1% idle CPU. Free download, v0.2.0.
-
-Career OS (founder · in development)
-  Resume -> matched job -> one-click application kit ->
-  tracker, for fresh graduates. Claude-powered matching.
-
-------------------------------------------------------------
-OTHER PROJECTS
-------------------------------------------------------------
-Fit 24 gym website (freelance, live)
-  fit24-rajajinagar.vercel.app · React, prerendered.
-PIXEL Workbench (TypeScript, Electron)
-  Local-first AI agent environment: multi-agent review,
-  deterministic governance with approvals, MCP, E2E tests.
-Study Buddy AI (React, Supabase) · live
-Industrial YOLO OCR: YOLOv8 layout detection on 2,676
-  invoice PDFs, mAP@50 0.69.
-Fraud Detection: recall 0.83 / precision 0.87,
-  ROC-AUC 0.975 at 0.17% prevalence.
-Brain Tumor Detection: CNN on MRI scans, Flask app.
-
-------------------------------------------------------------
-LEADERSHIP
-------------------------------------------------------------
-Google Developer Groups: team projects and hackathons
-National Cadet Corps: cadet
-
-------------------------------------------------------------
-SKILLS
-------------------------------------------------------------
-Product     user research · root-cause analysis · quality
-            rubrics · PRDs · metrics · prioritization
-AI/agents   Claude / Anthropic SDK · OpenAI-compatible ·
-            Gemini · MCP · RAG · agent orchestration · evals
-Languages   Python · TypeScript · Swift · Rust · SQL
-Backend     FastAPI · Fastify · Node.js · Flask · PostgreSQL ·
-            Supabase · REST
-Frontend    React · Next.js · Tailwind · Electron
-ML / CV     TensorFlow/Keras · PyTorch · scikit-learn ·
-            YOLOv8 · OpenCV · MediaPipe
-Shipping    Git · Docker · pytest · Vitest · Playwright
+Product     customer experience · user research · RCA ·
+            quality rubrics · PRDs · metrics
+AI          LLM agents · Claude / Anthropic SDK · evaluation
+Build       Python · TypeScript · Swift · Rust · FastAPI ·
+            React · Next.js · PostgreSQL
+Certs       IBM Product Management (Coursera) · Google
+            Generative AI · AWS ML & AI · NCC 'A' Certificate
+Other       Google Developer Groups · gym, swimming, MMA
 `;
 
 /* ======================================================================
@@ -1039,7 +1022,7 @@ const DEMO = [
 ];
 function openMandateDemo() {
   openWindow({
-    id: "mandate-demo", title: "Mandate_Demo.exe", icon: "shield", width: 780, height: 640,
+    id: "mandate-demo", title: "Mandate Demo", icon: "shield", width: 780, height: 640,
     status: "Example scenario, based on a real 2026 incident with an AI shopping agent",
     build(body) {
       let run = 0;
@@ -1082,7 +1065,7 @@ function openMandateDemo() {
    DESKTOP ICONS + START MENU
    ====================================================================== */
 const DESKTOP = [
-  { label: "Mandate_Demo.exe", icon: "shield", open: openMandateDemo, isNew: true },
+  { label: "Mandate Demo", icon: "shield", open: openMandateDemo, isNew: true },
   { label: "About_Me.txt", icon: "notepad", open: openResume },
   { label: "Impact.exe", icon: "chart", open: openImpact },
   { label: "Mandate", icon: "shield", open: () => openProject("mandate") },
