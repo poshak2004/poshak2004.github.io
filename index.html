@@ -369,16 +369,17 @@ const PROJECTS = {
       "Search (⌥Space): apps, files, actions, web results, optional AI answers with citations",
       "Accessibility: Reduce Motion, Reduce Transparency, Increase Contrast; public Apple APIs only",
       "One island, not a dashboard of widgets: a deterministic priority engine decides what shows",
+      "v0.3: teleprompter (timed or on-device voice-follow, hidden from screen capture), file shelf with AirDrop, customizable home launcher with pins and Shortcuts",
     ],
     stack: ["Swift", "SwiftUI", "AppKit"],
     case: {
       Problem: "The MacBook notch is dead screen space, and the apps that make it useful are paid. I didn't want to pay for something I could build.",
       Insight: "People want one glanceable thing at a time, not another dashboard. And anything that's always on must cost almost nothing in battery.",
       Decision: "One island with a deterministic priority order instead of many widgets; native Swift instead of Electron; public Apple APIs only, with private data opt-in. Trade-off: some features can't exist, because macOS has no public API for things like system-wide Now Playing or calls.",
-      Result: "v0.2.0 shipped as a free download, about 0.1% CPU when idle, with Reduce Motion, Reduce Transparency and Increase Contrast supported.",
+      Result: "v0.2.0 shipped as a free download, about 0.1% CPU when idle, with Reduce Motion, Reduce Transparency and Increase Contrast supported. v0.3.0 added a teleprompter that stays invisible in screen recordings, a drag-and-drop file shelf with AirDrop, and a customizable home launcher.",
       Next: "Notarize it for one-click install, add privacy-friendly download analytics, and ship the automation rule editor (the engine already exists).",
     },
-    live: { label: "Download v0.2.0 (.dmg)", url: GH + "/island/releases" },
+    live: { label: "Download v0.3.0 (.dmg)", url: GH + "/island/releases" },
     note: "Not notarized (no paid Apple Developer account): first launch needs System Settings → Privacy & Security → Open Anyway.",
   },
   study: {
@@ -491,7 +492,8 @@ Mandate (personal project · TypeScript, Python)
 
 Island (solo · Swift, SwiftUI, AppKit)
   The iPhone Dynamic Island for the MacBook notch: media,
-  timers, downloads, AI search, ~0.1% idle CPU. Open source.
+  timers, downloads, AI search, teleprompter, file shelf,
+  ~0.1% idle CPU. Open source.
 
 Pixel (solo · Rust, Swift, AppKit · private)
   A private command bar for the Mac with every action
